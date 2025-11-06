@@ -1,48 +1,232 @@
-/* body{
-    background-color: pink;
-} */
+body{
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+}
 .navbar {
-    height : 5rem;
-    background-color : white;
- 
+  height: 5rem;
+  background-color: white;
 }
-.fa-compass{
-color : red;
-font-size  :2rem;
+.fa-compass {
+  color: red;
+  font-size: 2rem;
 }
-.nav-link{
-    color : #222222 !important;
+.nav-link {
+  color: #222222 !important;
 }
 
 /* footer */
 
-.f-info-links a{
-text-decoration : none;
-color:#222222;
+.f-info-links a {
+  text-decoration: none;
+  color: #222222;
 }
 
-.f-info-links a:hover{
-text-decoration : underline;
-
+.f-info-links a:hover {
+  text-decoration: underline;
 }
-.f-info-links, .f-info-socials,.f-info-brand {
-    width : 100%;
-    display :flex;
-    align-items: center;
-    justify-content: center;
-    
+.f-info-links,
+.f-info-socials,
+.f-info-brand {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.f-info-socials i{
-    margin-right : 1rem;
-    font-size: 1.2rem;
+.f-info-socials i {
+  margin-right: 1rem;
+  font-size: 1.2rem;
 }
 .f-info {
-    text-align: center;
-    height : 8rem;
-    background-color: #ebebeb;
-    display :flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: space-evenly;
+  text-align: center;
+  height: 8rem;
+  background-color: #ebebeb;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: space-evenly;
+}
+
+/* card */
+.card{
+    border : none !important;
+    margin-bottom: 2rem;
+}
+.card-img-top{
+    border-radius: 1rem !important;
+    width : 100% !important;
+    object-fit : cover !important;
+}
+
+.card-body {
+    padding : 0 !important;
+} 
+/* .card-text p {
+  font-weight: 400 !important;
+} */
+
+/* ---------- GLOBAL STYLES ---------- */
+body {
+  font-family: "Plus Jakarta Sans", sans-serif !important;
+  background-color: #f7f7f7;
+  color: #222222;
+  scroll-behavior: smooth;
+}
+
+/* ---------- NAVBAR ---------- */
+.navbar {
+  height: 5rem;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease-in-out;
+}
+
+.navbar:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.fa-compass {
+  color: #ff385c;
+  font-size: 2rem;
+  transition: transform 0.3s ease;
+}
+
+.fa-compass:hover {
+  transform: rotate(20deg) scale(1.1);
+}
+
+.nav-link {
+  color: #222222 !important;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #ff385c !important;
+}
+
+/* ---------- FOOTER ---------- */
+.f-info {
+  text-align: center;
+  height: 8rem;
+  background-color: #ebebeb;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center; /* fixed invalid property */
+  padding: 1rem 0;
+}
+
+.f-info-links a {
+  text-decoration: none;
+  color: #222222;
+  margin: 0 0.5rem;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.f-info-links a:hover {
+  text-decoration: underline;
+  color: #ff385c;
+}
+
+.f-info-socials i {
+  margin-right: 1rem;
+  font-size: 1.3rem;
+  color: #555;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.f-info-socials i:hover {
+  transform: scale(1.2);
+  color: #ff385c;
+}
+
+/* ---------- CARD STYLES ---------- */
+.card {
+  border: none !important;
+  margin-bottom: 2rem;
+  border-radius: 1rem !important;
+  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s ease;
+  cursor: pointer;
+}
+
+/* Beautiful hover animation */
+.card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Subtle glowing animation */
+.card:hover .card-img-top {
+  filter: brightness(1.05);
+  transform: scale(1.03);
+}
+
+/* Image styling */
+.card-img-top {
+  border-radius: 1rem !important;
+  width: 100% !important;
+  height: 20rem;
+  object-fit: cover !important;
+  transition: all 0.5s ease;
+}
+
+/* Card text area */
+.card-body {
+  padding: 1rem 0.75rem !important;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.card:hover .card-body {
+  background-color: rgba(255, 56, 92, 0.05);
+}
+
+/* Text inside card */
+.card-text {
+  font-weight: 500;
+  color: #222222;
+  transition: color 0.3s ease;
+}
+
+.card-text strong,
+.card-text b {
+  font-weight: 700 !important;
+  color: #111;
+}
+
+/* Add fade-in animation for cards on page load */
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  animation: fadeUp 0.6s ease forwards;
+}
+
+/* Slight stagger animation for multiple cards */
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
+.card:nth-child(4) { animation-delay: 0.4s; }
+
+/* ---------- BUTTON (Optional) ---------- */
+.btn-primary {
+  background-color: #ff385c;
+  border: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: #e31c5f;
+  transform: scale(1.05);
 }
