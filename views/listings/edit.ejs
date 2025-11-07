@@ -1,35 +1,158 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TripoSpace</title>
-  </head>
-  <body>
+<% layout("/layouts/boilerplate") %>
+
+<div class="edit-wrapper">
+  <div class="edit-container">
+    <h3>Edit Listing</h3>
+
     <form method="POST" action="/listings/<%= listing._id %>?_method=PUT">
-      <input name="listing[title]" value="<%= listing.title %>"  />
-      <br /><br />
-      <textarea name="listing[description]" type="text">
-        <%=listing.description %></textarea
-      >
-      <br /><br />
-      <input name="listing[image]" value="<%=listing.image %>" />
-      <br /><br />
-      <input name="listing[price]" value="<%=listing.price %>" type="number" />
-      <br /><br />
+      <label>Title</label>
+      <input
+        name="listing[title]"
+        value="<%= listing.title %>"
+        type="text"
+        placeholder="Enter title"
+        required
+      />
+
+      <label>Description</label>
+      <textarea
+        name="listing[description]"
+        placeholder="Enter description"
+      ><%= listing.description %></textarea>
+
+      <label>Image URL</label>
+      <input
+        name="listing[image]"
+        value="<%= listing.image %>"
+        type="text"
+        placeholder="Enter image URL"
+      />
+
+      <label>Price (₹)</label>
+      <input
+        name="listing[price]"
+        value="<%= listing.price %>"
+        type="number"
+        placeholder="Enter price"
+      />
+
+      <label>Country</label>
       <input
         name="listing[country]"
-        value="<%=listing.country %>"
+        value="<%= listing.country %>"
         type="text"
+        placeholder="Enter country"
       />
-      <br /><br />
+
+      <label>Location</label>
       <input
         name="listing[location]"
-        value="<%=listing.location %>"
+        value="<%= listing.location %>"
         type="text"
+        placeholder="Enter location"
       />
-      <br /><br />
-      <button>Update</button>
+
+      <button type="submit">Update Listing</button>
     </form>
-  </body>
-</html>
+  </div>
+</div>
+
+<style>
+  /* Keep navbar and footer visible */
+  body {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Wrapper gives vertical breathing space (navbar + footer still visible) */
+  .edit-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 4rem 0;
+    min-height: calc(100vh - 8rem); /* leaves room for navbar/footer */
+  }
+
+  .edit-container {
+    background-color: #fff;
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 500px;
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  h3 {
+    text-align: center;
+    color: #ff385c;
+    margin-bottom: 2rem;
+    font-weight: 700;
+  }
+
+  label {
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 0.6rem;
+    font-size: 1rem;
+    margin-bottom: 1.2rem;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+
+  input:focus,
+  textarea:focus {
+    border-color: #ff385c;
+    box-shadow: 0 0 8px rgba(255, 56, 92, 0.2);
+  }
+
+  textarea {
+    resize: none;
+    height: 100px;
+  }
+
+  button {
+    width: 100%;
+    padding: 0.9rem;
+    background-color: #ff385c;
+    color: #fff;
+    border: none;
+    border-radius: 0.6rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #e31c5f;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 56, 92, 0.3);
+  }
+
+  button:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+</style>
