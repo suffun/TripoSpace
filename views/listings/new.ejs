@@ -1,189 +1,171 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TripoSpace | Create New Listing</title>
+<% layout("/layouts/boilerplate") %>
 
-    <!-- Google Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
+<div class="form-container">
+  <h3>Create a New Listing</h3>
+
+  <form method="POST" action="/listings" novalidate class="needs-validation">
+    <label for="title">Title</label>
+    <input
+      id="title"
+      name="listing[title]"
+      type="text"
+      placeholder="Enter title"
+      class="form-control was-validated"
+      required
+    />
+    <div class="invalid-feedback">please enter a title</div>
+
+    <label for="desc">Description</label>
+    <textarea
+      id="desc"
+      name="listing[description]"
+      placeholder="Enter description"
+      class="form-control was-validated"
+      required
+    ></textarea>
+    <div class="invalid-feedback">please enter a short description</div>
+
+    <label for="image">Image URL</label>
+    <input
+      id="image"
+      name="listing[image]"
+      type="text"
+      placeholder="Enter image URL"
     />
 
-    <style>
-      :root {
-        --accent: #ff385c;
-        --accent-hover: #e31c5f;
-        --bg: #f7f7f7;
-        --text: #222;
-        --border: #ddd;
-      }
+    <label for="price">Price (₹)</label>
+    <input
+      id="price"
+      name="listing[price]"
+      type="number"
+      placeholder="Enter price"
+      class="form-control was-validated"
+      required
+    />
+    <div class="invalid-feedback">please enter a correct price</div>
 
-      * {
-        box-sizing: border-box;
-      }
+    <label for="country">Country</label>
+    <input
+      id="country"
+      name="listing[country]"
+      type="text"
+      placeholder="Enter country"
+      class="form-control was-validated"
+      required
+    />
+    <div class="invalid-feedback">please enter a country name</div>
 
-      body {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        background-color: var(--bg);
-        color: var(--text);
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-      }
+    <label for="location">Location</label>
+    <input
+      id="location"
+      name="listing[location]"
+      type="text"
+      placeholder="Enter location"
+      class="form-control was-validated"
+      required
+    />
+    <div class="invalid-feedback"> enter location</div>
 
-      .form-container {
-        background: #fff;
-        border-radius: 1rem;
-        padding: 2.5rem;
-        width: 90%;
-        max-width: 480px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        animation: fadeUp 0.6s ease forwards;
-      }
+    <button type="submit">Add Listing</button>
+  </form>
+</div>
 
-      @keyframes fadeUp {
-        from {
-          opacity: 0;
-          transform: translateY(30px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
+<style>
+  :root {
+    --accent: #ff385c;
+    --accent-hover: #e31c5f;
+    --bg: #f7f7f7;
+    --text: #222;
+    --border: #ddd;
+  }
 
-      h3 {
-        text-align: center;
-        color: var(--accent);
-        font-weight: 700;
-        margin-bottom: 2rem;
-      }
+  body {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0;
+  }
 
-      label {
-        font-weight: 600;
-        display: block;
-        margin-bottom: 0.4rem;
-      }
+  .form-container {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 2.5rem;
+    width: 90%;
+    max-width: 480px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    margin: 4rem auto;
+    animation: fadeUp 0.6s ease forwards;
+  }
 
-      input,
-      textarea {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        border: 1px solid var(--border);
-        border-radius: 0.6rem;
-        font-family: inherit;
-        font-size: 1rem;
-        outline: none;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        margin-bottom: 1.25rem;
-      }
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-      input:focus,
-      textarea:focus {
-        border-color: var(--accent);
-        box-shadow: 0 0 6px rgba(255, 56, 92, 0.3);
-      }
+  h3 {
+    text-align: center;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 2rem;
+  }
 
-      textarea {
-        resize: none;
-        height: 100px;
-      }
+  label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
 
-      button {
-        width: 100%;
-        background: var(--accent);
-        color: #fff;
-        font-weight: 600;
-        font-size: 1rem;
-        border: none;
-        border-radius: 0.6rem;
-        padding: 0.9rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
+  input,
+  textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.6rem;
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 1.25rem;
+  }
 
-      button:hover {
-        background: var(--accent-hover);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(255, 56, 92, 0.3);
-      }
+  input:focus,
+  textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 6px rgba(255, 56, 92, 0.3);
+  }
 
-      /* small fade-in animation on hover */
-      button:active {
-        transform: translateY(0);
-        box-shadow: none;
-      }
+  textarea {
+    resize: none;
+    height: 100px;
+  }
 
-      /* Responsive */
-      @media (max-width: 480px) {
-        .form-container {
-          padding: 1.5rem;
-        }
-      }
-    </style>
-  </head>
+  button {
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    border-radius: 0.6rem;
+    padding: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
 
-  <body>
-    <div class="form-container">
-      <h3>Create a New Listing</h3>
+  button:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(255, 56, 92, 0.3);
+  }
 
-      <form method="POST" action="/listings">
-        <label for="title">Title</label>
-        <input
-          id="title"
-          name="listing[title]"
-          type="text"
-          placeholder="Enter title"
-          required
-        />
-
-        <label for="desc">Description</label>
-        <textarea
-          id="desc"
-          name="listing[description]"
-          placeholder="Enter description"
-        ></textarea>
-
-        <label for="image">Image URL</label>
-        <input
-          id="image"
-          name="listing[image]"
-          type="text"
-          placeholder="Enter image URL"
-        />
-
-        <label for="price">Price (₹)</label>
-        <input
-          id="price"
-          name="listing[price]"
-          type="number"
-          placeholder="Enter price"
-        />
-
-        <label for="country">Country</label>
-        <input
-          id="country"
-          name="listing[country]"
-          type="text"
-          placeholder="Enter country"
-        />
-
-        <label for="location">Location</label>
-        <input
-          id="location"
-          name="listing[location]"
-          type="text"
-          placeholder="Enter location"
-        />
-
-        <button type="submit">Add Listing</button>
-      </form>
-    </div>
-  </body>
-</html>
+  button:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+</style>

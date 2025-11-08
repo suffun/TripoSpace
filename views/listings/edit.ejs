@@ -4,7 +4,12 @@
   <div class="edit-container">
     <h3>Edit Listing</h3>
 
-    <form method="POST" action="/listings/<%= listing._id %>?_method=PUT">
+    <form
+      method="POST"
+      action="/listings/<%= listing._id %>?_method=PUT"
+      novalidate
+      class="needs-validation"
+    >
       <label>Title</label>
       <input
         name="listing[title]"
@@ -12,13 +17,20 @@
         type="text"
         placeholder="Enter title"
         required
+        class="form-control"
       />
+      <div class="invalid-feedback ">please enter a title</div>
 
       <label>Description</label>
       <textarea
         name="listing[description]"
         placeholder="Enter description"
-      ><%= listing.description %></textarea>
+        required
+         class="form-control"
+      >
+<%= listing.description %></textarea
+      >
+      <div class="invalid-feedback">please enter a short description</div>
 
       <label>Image URL</label>
       <input
@@ -26,7 +38,10 @@
         value="<%= listing.image %>"
         type="text"
         placeholder="Enter image URL"
+        required
+         class="form-control"
       />
+       <div class="invalid-feedback">please enter image url</div>
 
       <label>Price (₹)</label>
       <input
@@ -34,7 +49,10 @@
         value="<%= listing.price %>"
         type="number"
         placeholder="Enter price"
+        required
+         class="form-control"
       />
+      <div class="invalid-feedback">please enter a correct price</div>
 
       <label>Country</label>
       <input
@@ -42,7 +60,10 @@
         value="<%= listing.country %>"
         type="text"
         placeholder="Enter country"
+        required
+         class="form-control"
       />
+      <div class="invalid-feedback">please enter a country name</div>
 
       <label>Location</label>
       <input
@@ -50,8 +71,10 @@
         value="<%= listing.location %>"
         type="text"
         placeholder="Enter location"
+        required
+         class="form-control"
       />
-
+      <div class="invalid-feedback">please enter location</div>
       <button type="submit">Update Listing</button>
     </form>
   </div>
