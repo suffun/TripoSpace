@@ -6,6 +6,7 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js");
+const ExpressError = require("./utils/ExpressError");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/TripoSpace";
 
@@ -46,15 +47,18 @@ app.get("/listings/new", (req, res) => {
 
 // SHOW ROUTE
 
-app.get("/listings/:id", async (req, res) => {
+app.get("/listings/:id", wrapAsync (async (req, res) => {
   let { id } = req.params;
   const listing = await Listing.findById(id);
   res.render("listings/show", { listing });
-});
+}));
 
 // Create Route
 
 app.post("/listings", wrapAsync (async(req, res, next) => {
+  if(!req.body.listing){
+    throw new ExpressError(400,"send valid data for listing")
+  }
   
  // let {title,description,image,price,country,location} = req.body;
   // let listing = req.body.listing;
@@ -66,29 +70,32 @@ app.post("/listings", wrapAsync (async(req, res, next) => {
 
 // EDIT ROUTE
 
-app.get("/listings/:id/edit", async (req, res) => {
+app.get("/listings/:id/edit",wrapAsync (async (req, res) => {
   let { id } = req.params;
   const listing = await Listing.findById(id);
   res.render("listings/edit", { listing });
-});
+}));
 
 // UPDATE ROUTE
 
-app.put("/listings/:id", async (req, res) => {
+app.put("/listings/:id", wrapAsync(async (req, res) => {
+  if(!req.body.listing){
+    throw new ExpressError(400,"send valid data for lisying")
+  }
   let { id } = req.params;
   // console.log(req.body);
   await Listing.findByIdAndUpdate(id, { ...req.body.listing });
   res.redirect(`/listings/${id}`);
 
-});
+}));
 
 // DELETE ROUTE
-app.delete("/listings/:id", async (req, res) => {
+app.delete("/listings/:id",wrapAsync (async (req, res) => {
   let { id } = req.params;
   await Listing.findByIdAndDelete(id);
   res.redirect("/listings");
 
-});
+}));
 
 
 //   app.get("/testListing", async (req, res) => {
@@ -104,13 +111,16 @@ app.delete("/listings/:id", async (req, res) => {
 //   res.send("successful testing");
 // });
 
+
+app.all(/.*/,(req,res,next)=>{
+  next(new ExpressError(404,"Page not found!"));
+});
+
 app.use((err, req, res, next)=> {
-  res.send("something went wrong")
-})
+  let {statusCode=500,message="Oh no! Something went wrong."} = err;
+  res.status(statusCode).send(message);
+});
 
 app.listen(8080, () => {
   console.log("server is listening to port 8080");
 });
-
-
-
