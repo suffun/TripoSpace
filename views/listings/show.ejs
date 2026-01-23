@@ -1,6 +1,7 @@
 <% layout("/layouts/boilerplate") %>
 
 <div class="listing-container">
+
   <div class="listing-card">
     <img src="<%= listing.image %>" alt="<%= listing.title %>" class="listing-img" />
 
@@ -21,6 +22,31 @@
         </form>
       </div>
     </div>
+  <div class="review-section">
+  <hr />
+  <h4>Leave a Review</h4>
+  <form action="/listings/<%= listing._id %>/reviews" method="POST" class="needs-validation">
+    <div class="mb-3 mt-3">
+      <label for="rating" class="form-label">Rating</label>
+      <input type="range" min="1" max="5" id="rating" name="review[rating]" class="form-range">
+    </div>
+    
+    <div class="mb-3 mt-3">
+      <label for="comment" class="form-label">Comments</label>
+      <textarea 
+        name="review[comment]" 
+        id="comment" 
+        cols="30" 
+        rows="5" 
+        class="form-control" 
+        placeholder="Share your experience..."
+        required
+      ></textarea>
+    </div>
+    
+    <button class="btn btn-outline-dark submit-btn">Submit Review</button>
+  </form>
+</div>
   </div>
 </div>
 
@@ -137,6 +163,68 @@
 
   form {
     display: inline;
+  }
+
+  /* Review Section Styles */
+  .review-section {
+    padding: 2rem;
+    border-top: 1px solid #eee;
+  }
+
+  .review-section h4 {
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #222;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #444;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #ff385c;
+    box-shadow: 0 0 0 3px rgba(255, 56, 92, 0.1);
+  }
+
+  .form-range {
+    width: 100%;
+    accent-color: #ff385c; /* Matches your theme color */
+  }
+
+  .submit-btn {
+    background-color: transparent;
+    border: 1px solid #222;
+    color: #222;
+    padding: 0.6rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .submit-btn:hover {
+    background-color: #222;
+    color: #fff;
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 2rem 0;
   }
 
   @media (max-width: 768px) {
