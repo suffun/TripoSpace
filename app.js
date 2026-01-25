@@ -7,7 +7,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const { listingSchema } = require("./schema.js");
+const { listingSchema, reviewSchema } = require("./schema.js");
 const Review = require("./models/review.js")
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/TripoSpace";
@@ -45,6 +45,18 @@ const validateListing = (req, res, next) => {
     next();
   }
 };
+
+const validateReview = (req, res, next) => {
+  const { error } = reviewSchema.validate(req.body);
+  console.log(error);
+  if (error) {
+    let errMsg = error.details.map((el) => el.message).join(",");
+    throw new ExpressError(400, error);
+  } else {
+    next();
+  }
+};
+
 
 // INDEX
 app.get("/listings", async (req, res) => {
@@ -126,7 +138,7 @@ app.delete(
 // REVIEWS
 // POST ROUTE
 
-app.post("/listings/:id/reviews",async (req,res)=>{
+app.post("/listings/:id/reviews", validateReview, wrapAsync (async (req,res)=>{
   let listing = await Listing.findById(req.params.id);
   let newReview = new Review(req.body.review);
   listing.reviews.push(newReview);
@@ -136,7 +148,7 @@ app.post("/listings/:id/reviews",async (req,res)=>{
 
   res.redirect(`/listings/${listing._id}`); 
 
-})
+}));
 
 //   app.get("/testListing", async (req, res) => {
 //   let sampleListing = new Listing({
