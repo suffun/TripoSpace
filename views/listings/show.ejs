@@ -1,5 +1,7 @@
 <% layout("/layouts/boilerplate") %>
 
+<link rel="stylesheet" href="/css/style.css">
+
 <div class="listing-container">
 
   <div class="listing-card">
@@ -46,196 +48,27 @@
     
     <button class="btn btn-outline-dark submit-btn">Submit Review</button>
   </form>
+  
+  <hr />
+
+<div class="row review-row">
+  <h4>All Reviews</h4>
+  <% for(review of listing.reviews) { %>
+    <div class="card col-5 ms-3 mb-3 review-card">
+      <div class="card-body">
+        <h5 class="card-title">@anonymous</h5>
+        <p class="starability-result card-text" data-rating="<%= review.rating %>">
+          Rated: <%= review.rating %> stars
+        </p>
+        <p class="card-text review-comment"><%= review.comment %></p>
+        
+        <form class="mb-3" method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
+          <button class="btn btn-sm btn-dark">Delete</button>
+        </form>
+      </div>
+    </div>
+  <% } %>
+</div>
 </div>
   </div>
 </div>
-
-<style>
-  body {
-    font-family: "Plus Jakarta Sans", sans-serif;
-    background-color: #f7f7f7;
-    margin: 0;
-    padding: 0;
-  }
-
-  .listing-container {
-    display: flex;
-    justify-content: center;
-    padding: 4rem 1rem;
-  }
-
-  .listing-card {
-    background: #fff;
-    border-radius: 1rem;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    max-width: 750px;
-    width: 100%;
-    overflow: hidden;
-    animation: fadeUp 0.6s ease forwards;
-  }
-
-  @keyframes fadeUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .listing-img {
-    width: 100%;
-    height: 400px;
-    object-fit: cover;
-  }
-
-  .listing-content {
-    padding: 2rem;
-  }
-
-  .listing-title {
-    color: #ff385c;
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-  }
-
-  .listing-desc {
-    color: #444;
-    font-size: 1.05rem;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-  }
-
-  .listing-meta {
-    font-size: 1rem;
-    color: #666;
-    margin-bottom: 2rem;
-  }
-
-  .price {
-    font-weight: 600;
-    font-size: 1.2rem;
-    color: #222;
-  }
-
-  .listing-actions {
-    display: flex;
-    gap: 1rem;
-  }
-
-  .edit-btn,
-  .delete-btn {
-    display: inline-block;
-    padding: 0.8rem 1.2rem;
-    font-size: 1rem;
-    font-weight: 600;
-    border: none;
-    border-radius: 0.6rem;
-    cursor: pointer;
-    text-decoration: none;
-    text-align: center;
-    transition: all 0.3s ease;
-  }
-
-  .edit-btn {
-    background-color: #ff385c;
-    color: #fff;
-  }
-
-  .edit-btn:hover {
-    background-color: #e31c5f;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255, 56, 92, 0.3);
-  }
-
-  .delete-btn {
-    background-color: #f0f0f0;
-    color: #555;
-  }
-
-  .delete-btn:hover {
-    background-color: #ddd;
-    transform: translateY(-2px);
-  }
-
-  form {
-    display: inline;
-  }
-
-  /* Review Section Styles */
-  .review-section {
-    padding: 2rem;
-    border-top: 1px solid #eee;
-  }
-
-  .review-section h4 {
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    color: #222;
-  }
-
-  .form-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: #444;
-  }
-
-  .form-control {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid #ccc;
-    border-radius: 0.5rem;
-    font-family: inherit;
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
-  }
-
-  .form-control:focus {
-    outline: none;
-    border-color: #ff385c;
-    box-shadow: 0 0 0 3px rgba(255, 56, 92, 0.1);
-  }
-
-  .form-range {
-    width: 100%;
-    accent-color: #ff385c; /* Matches your theme color */
-  }
-
-  .submit-btn {
-    background-color: transparent;
-    border: 1px solid #222;
-    color: #222;
-    padding: 0.6rem 1.5rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .submit-btn:hover {
-    background-color: #222;
-    color: #fff;
-  }
-
-  hr {
-    border: 0;
-    border-top: 1px solid #eee;
-    margin: 2rem 0;
-  }
-
-  @media (max-width: 768px) {
-    .listing-card {
-      max-width: 100%;
-    }
-    .listing-img {
-      height: 250px;
-    }
-    .listing-content {
-      padding: 1.5rem;
-    }
-  }
-</style>
