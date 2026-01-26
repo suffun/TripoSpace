@@ -1,6 +1,5 @@
-body{
-    font-family: "Plus Jakarta Sans", sans-serif !important;
-   
+body {
+  font-family: "Plus Jakarta Sans", sans-serif !important;
 }
 
 .navbar {
@@ -49,19 +48,19 @@ body{
 }
 
 /* card */
-.card{
-    border : none !important;
-    margin-bottom: 2rem;
+.card {
+  border: none !important;
+  margin-bottom: 2rem;
 }
-.card-img-top{
-    border-radius: 1rem !important;
-    width : 100% !important;
-    object-fit : cover !important;
+.card-img-top {
+  border-radius: 1rem !important;
+  width: 100% !important;
+  object-fit: cover !important;
 }
 
 .card-body {
-    padding : 0 !important;
-} 
+  padding: 0 !important;
+}
 /* .card-text p {
   font-weight: 400 !important;
 } */
@@ -216,10 +215,18 @@ body {
 }
 
 /* Slight stagger animation for multiple cards */
-.card:nth-child(1) { animation-delay: 0.1s; }
-.card:nth-child(2) { animation-delay: 0.2s; }
-.card:nth-child(3) { animation-delay: 0.3s; }
-.card:nth-child(4) { animation-delay: 0.4s; }
+.card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.card:nth-child(4) {
+  animation-delay: 0.4s;
+}
 
 /* ---------- BUTTON (Optional) ---------- */
 .btn-primary {
@@ -231,4 +238,433 @@ body {
 .btn-primary:hover {
   background-color: #e31c5f;
   transform: scale(1.05);
+}
+
+/* SHOW STYLING */
+
+body {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  background-color: #f7f7f7;
+  margin: 0;
+  padding: 0;
+}
+
+.listing-container {
+  display: flex;
+  justify-content: center;
+  padding: 4rem 1rem;
+}
+
+.listing-card {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  max-width: 750px;
+  width: 100%;
+  overflow: hidden;
+  animation: fadeUp 0.6s ease forwards;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.listing-img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+}
+
+.listing-content {
+  padding: 2rem;
+}
+
+.listing-title {
+  color: #ff385c;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.listing-desc {
+  color: #444;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.listing-meta {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.price {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #222;
+}
+
+.listing-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.edit-btn,
+.delete-btn {
+  display: inline-block;
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.edit-btn {
+  background-color: #ff385c;
+  color: #fff;
+}
+
+.edit-btn:hover {
+  background-color: #e31c5f;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 56, 92, 0.3);
+}
+
+.delete-btn {
+  background-color: #f0f0f0;
+  color: #555;
+}
+
+.delete-btn:hover {
+  background-color: #ddd;
+  transform: translateY(-2px);
+}
+
+form {
+  display: inline;
+}
+
+/* Review Section Styles */
+.review-section {
+  padding: 2rem;
+  border-top: 1px solid #eee;
+}
+
+.review-section h4 {
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #222;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #444;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #ff385c;
+  box-shadow: 0 0 0 3px rgba(255, 56, 92, 0.1);
+}
+
+.form-range {
+  width: 100%;
+  accent-color: #ff385c; /* Matches your theme color */
+}
+
+.submit-btn {
+  display: inline-block;     /* Ensures it only takes up as much space as the text */
+  width: fit-content;        /* Prevents it from stretching to 100% width */
+  background-color: transparent;
+  border: 1px solid #222;
+  color: #222;
+  padding: 0.6rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;          /* Adds some space above the button */
+  margin-left: 35%;
+}
+
+.submit-btn:hover {
+  background-color: #222;
+  color: #fff;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #eee;
+  margin: 2rem 0;
+}
+
+@media (max-width: 768px) {
+  .listing-card {
+    max-width: 100%;
+  }
+  .listing-img {
+    height: 250px;
+  }
+  .listing-content {
+    padding: 1.5rem;
+  }
+}
+
+/* NEW STYLING */
+
+:root {
+  --accent: #ff385c;
+  --accent-hover: #e31c5f;
+  --bg: #f7f7f7;
+  --text: #222;
+  --border: #ddd;
+}
+
+body {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  margin: 0;
+}
+
+.form-container {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2.5rem;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  margin: 4rem auto;
+  animation: fadeUp 0.6s ease forwards;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+h3 {
+  text-align: center;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 1.25rem;
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 6px rgba(255, 56, 92, 0.3);
+}
+
+textarea {
+  resize: none;
+  height: 100px;
+}
+
+button {
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-radius: 0.6rem;
+  padding: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(255, 56, 92, 0.3);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* EDIT STYLING */
+
+/* Keep navbar and footer visible */
+body {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  background-color: #f7f7f7;
+  margin: 0;
+  padding: 0;
+}
+
+/* Wrapper gives vertical breathing space (navbar + footer still visible) */
+.edit-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 4rem 0;
+  min-height: calc(100vh - 8rem); /* leaves room for navbar/footer */
+}
+
+.edit-container {
+  background-color: #fff;
+  padding: 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 500px;
+  animation: fadeUp 0.6s ease forwards;
+}
+
+/* Review Section Styling */
+.review-row {
+  margin-top: 2rem;
+  padding: 0 1rem;
+}
+
+.review-card {
+  border: 1px solid #ddd !important;
+  border-radius: 0.8rem !important;
+  transition: box-shadow 0.3s ease;
+  padding: 10px;
+}
+
+.review-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.review-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.review-comment {
+  color: #5e5e5e;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  border-radius: 0.4rem;
+}
+
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+h3 {
+  text-align: center;
+  color: #ff385c;
+  margin-bottom: 2rem;
+  font-weight: 700;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  display: block;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 0.6rem;
+  font-size: 1rem;
+  margin-bottom: 1.2rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #ff385c;
+  box-shadow: 0 0 8px rgba(255, 56, 92, 0.2);
+}
+
+textarea {
+  resize: none;
+  height: 100px;
+}
+
+button {
+  width: 100%;
+  padding: 0.9rem;
+  background-color: #ff385c;
+  color: #fff;
+  border: none;
+  border-radius: 0.6rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #e31c5f;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 56, 92, 0.3);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
