@@ -9,7 +9,8 @@ const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
 const { listingSchema, reviewSchema } = require("./schema.js");
 const Review = require("./models/review.js");
-const { wrap } = require("module");
+
+const listings = require("./routes/listing.js")
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/TripoSpace";
 
@@ -36,16 +37,6 @@ app.get("/", (req, res) => {
   res.send("HI I am root");
 });
 
-const validateListing = (req, res, next) => {
-  const { error } = listingSchema.validate(req.body);
-  console.log(error);
-  if (error) {
-    let errMsg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(400, error);
-  } else {
-    next();
-  }
-};
 
 const validateReview = (req, res, next) => {
   const { error } = reviewSchema.validate(req.body);
@@ -59,74 +50,11 @@ const validateReview = (req, res, next) => {
   }
 };
 
+app.use("/listings",listings)
 
-// INDEX
-app.get("/listings", async (req, res) => {
-  const allListings = await Listing.find({});
-  res.render("listings/index", { allListings });
-});
 
-// NEW ROUTE
 
-app.get("/listings/new", (req, res) => {
-  res.render("listings/new");
-});
 
-// SHOW ROUTE
-
-app.get(
-  "/listings/:id",
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    const listing = await Listing.findById(id).populate("reviews");
-    res.render("listings/show", { listing });
-  })
-);
-
-// Create Route
-
-app.post(
-  "/listings",
-  validateListing,
-  wrapAsync(async (req, res, next) => {
-    // if(!req.body.listing){
-    //   throw new ExpressError(400,"send valid data for listing")
-    // }
-
-    // let {title,description,image,price,country,location} = req.body;
-    // let listing = req.body.listing;
-    const newListing = new Listing(req.body.listing);
-    await newListing.save();
-    res.redirect("/listings");
-  })
-);
-
-// EDIT ROUTE
-
-app.get(
-  "/listings/:id/edit",
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    const listing = await Listing.findById(id);
-    res.render("listings/edit", { listing });
-  })
-);
-
-// UPDATE ROUTE
-
-app.put(
-  "/listings/:id",
-  validateListing,
-  wrapAsync(async (req, res) => {
-    // if (!req.body.listing) {
-    //   throw new ExpressError(400, "send valid data for lisying");
-    // }
-    let { id } = req.params;
-    // console.log(req.body);
-    await Listing.findByIdAndUpdate(id, { ...req.body.listing });
-    res.redirect(`/listings/${id}`);
-  })
-);
 
 // DELETE ROUTE
 app.delete(
