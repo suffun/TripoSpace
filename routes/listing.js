@@ -2,12 +2,12 @@ const express = require("express");
 const router = express.Router();
 const wrapAsync = require("../utils/wrapAsync.js"); 
 const ExpressError = require("../utils/ExpressError.js");
-const { listingSchema, reviewSchema } = require("../schema.js");
+const { listingSchema} = require("../schema.js");
 const Listing = require("../models/listing.js");
 
 const validateListing = (req, res, next) => {
   const { error } = listingSchema.validate(req.body);
-  console.log(error);
+//   console.log(error);
   if (error) {
     let errMsg = error.details.map((el) => el.message).join(",");
     throw new ExpressError(400, error);
@@ -23,6 +23,7 @@ router.get("/", wrapAsync (async (req, res) => {
   const allListings = await Listing.find({});
   res.render("listings/index", { allListings });
 }));
+
 
 // NEW ROUTE
 
@@ -43,6 +44,7 @@ router.get(
 
 
 // Create Route
+
 
 router.post(
   "/",
@@ -74,7 +76,7 @@ router.get(
 // UPDATE ROUTE
 
 router.put(
-  "/ :id",
+  "/:id",
   validateListing,
   wrapAsync(async (req, res) => {
     // if (!req.body.listing) {
@@ -84,6 +86,16 @@ router.put(
     // console.log(req.body);
     await Listing.findByIdAndUpdate(id, { ...req.body.listing });
     res.redirect(`/listings/${id}`);
+  })
+);
+
+// DELETE ROUTE
+router.delete(
+  "/:id",
+  wrapAsync(async (req, res) => {
+    let { id } = req.params;
+    await Listing.findByIdAndDelete(id);
+    res.redirect("/listings");
   })
 );
 
