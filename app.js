@@ -10,7 +10,7 @@ const ExpressError = require("./utils/ExpressError.js");
 // const { listingSchema, reviewSchema } = require("./schema.js");
 // const Review = require("./models/review.js");
 const session = require("express-session");
-const flash = require("connect-flash");
+// const flash = require("connect-flash");
 
 const listings = require("./routes/listing.js")
 const reviews = require("./routes/review.js")
@@ -49,21 +49,33 @@ const sessionOptions = {
 };
 
 
-
 app.get("/", (req, res) => {
   res.send("HI I am root");
 });
 
 
 app.use(session(sessionOptions));
-app.use(flash());
+// app.use(flash());
 
-res.use((req, res, next) => {
-  res.locals.success = req.flash("success");
+// app.use((req, res, next) => {
+//   res.locals.success = req.flash("success");
+//   next();
+// });
+
+// Custom flash messages – no extra packages needed
+app.use((req, res, next) => {
+  res.locals.messages = req.session.messages || [];
+  req.session.messages = []; // clear after use
+
+  req.flash = (type, message) => {
+    req.session.messages = req.session.messages || [];
+    req.session.messages.push({ type, message });
+  };
+
+  next();
 });
 
 app.use("/listings",listings);
-
 app.use("/listings/:id/reviews",reviews);
 
 
