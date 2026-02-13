@@ -1,6 +1,6 @@
 <% if (messages && messages.length > 0) { %>
   <% messages.forEach(msg => { %>
-    <div class="alert alert-<%= msg.type %> alert-dismissible fade show" role="alert">
+    <div class="alert alert-<%= msg.type %> alert-dismissible fade show col-6 offset-3" role="alert">
       <%= msg.message %>
 
       <button 
