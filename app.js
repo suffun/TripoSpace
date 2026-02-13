@@ -49,9 +49,6 @@ const sessionOptions = {
 };
 
 
-app.get("/", (req, res) => {
-  res.send("HI I am root");
-});
 
 
 app.use(session(sessionOptions));
@@ -74,6 +71,11 @@ app.use((req, res, next) => {
 
   next();
 });
+
+app.get("/", (req, res) => {
+  res.send("HI I am root");
+});
+
 
 app.use("/listings",listings);
 app.use("/listings/:id/reviews",reviews);
