@@ -1,0 +1,54 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="card shadow-lg col-md-6 col-lg-5 p-4">
+
+    <h2 class="text-center mb-4">Login</h2>
+
+    <form action="/login" method="POST" class="needs-validation" novalidate>
+
+     
+      <!-- Username -->
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          id="username" 
+          name="username" 
+          required
+        >
+       
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input 
+          type="password" 
+          class="form-control" 
+          id="password" 
+          name="password" 
+          required
+        >
+       
+      </div>
+
+      <!-- Submit -->
+      <div class="d-grid">
+        <button class="btn btn-success btn-lg">
+          Login
+        </button>
+      </div>
+
+    </form>
+
+    <div class="text-center mt-3">
+      <small>
+        Don't have an account?
+        <a href="/signup">Sign up</a>
+      </small>
+    </div>
+
+  </div>
+</div>
