@@ -17,7 +17,7 @@ router.post("/signup",wrapAsync(async(req,res) => {
     req.flash("success", "Welcome to TripoSpace");
     res.redirect("/listings"); 
     } catch(e){
-         req.flash("danger", e.message);
+         req.flash("error", e.message);
          res.redirect("/signup");
     }
 }));
@@ -26,22 +26,14 @@ router.get("/login",(req,res) => {
     res.render("users/login.ejs");
 });
 
-router.post("/login", (req, res, next) => {
-  passport.authenticate("local", (err, user, info) => {
-    if (err) return next(err);
-
-    if (!user) {
-      req.flash("danger", "Password or username is incorrect");
-      return res.redirect("/login");
-    }
-
-    req.login(user, (err) => {
-      if (err) return next(err);
-      req.flash("success", "Welcome Back to TripoSpace");
-      res.redirect("/listings");
-    });
-
-  })(req, res, next);
+router.post("/login",
+    passport.authenticate("local",{
+        failureRedirect:"/login", 
+        failureFlash : true
+    }),
+    async(req,res)=>{
+     req.flash("success","Welcome Back to TripoSpace");
+     res.redirect("/listings");
 });
 
 module.exports = router;
