@@ -14,7 +14,6 @@
         <p class="price">&#8377;<%= listing.price.toLocaleString("en-IN") %> / night</p>
         <p class="location"><%= listing.location %>, <%= listing.country %></p>
       </div>
-     <% if(currUser &&  currUser._id.equals(listing.owner._id)) { %>
 
     
       <div class="listing-actions">
@@ -23,7 +22,7 @@
           <button class="delete-btn">Delete Listing</button>
         </form>
       </div>
-      <%  }%>
+
     </div> <div class="review-section">
       <hr />
       <h4>Leave a Review</h4>
