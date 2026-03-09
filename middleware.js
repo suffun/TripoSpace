@@ -1,10 +1,15 @@
 const Listing = require("./models/listing");
 const ExpressError = require("./utils/ExpressError.js");
 const { listingSchema, reviewSchema } = require("./schema.js");
+const Review = require("./models/review");
 
 module.exports.isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
-        req.session.redirectUrl = req.originalUrl;
+        if (req.method === "GET") {
+            req.session.redirectUrl = req.originalUrl;
+        } else {
+            req.session.redirectUrl = req.headers.referer; 
+        }
         req.flash("error", "You must be logged in!");
         return res.redirect("/login");
     }
@@ -25,6 +30,17 @@ module.exports.isOwner = async (req,res, next) =>{
     let listing = await Listing.findById(id);
     if (!listing.owner.equals(res.locals.currUser._id)){
       req.flash("error", "You are not the owner of this property");
+      return res.redirect(`/listings/${id}`);
+    };
+    next();
+};
+
+module.exports.isReviewAuthor = async (req,res, next) =>{
+      // it checks whether user is same or not before editing 
+      let { id, reviewId } = req.params;
+    let review = await Review.findById(reviewId);
+    if (!review.author.equals(res.locals.currUser._id)){
+      req.flash("error", "You are not the author of this review");
       return res.redirect(`/listings/${id}`);
     };
     next();
