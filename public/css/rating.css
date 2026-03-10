@@ -195,3 +195,5 @@
   -webkit-transition: background-position .7s;
   transition: background-position .7s;
 }
+
+.starability-result { margin: 10px auto !important; display: block; }
