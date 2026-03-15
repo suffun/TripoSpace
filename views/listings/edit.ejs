@@ -1,5 +1,5 @@
 <% layout("/layouts/boilerplate") %>
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/style.css" />
 
 <div class="edit-wrapper">
   <div class="edit-container">
@@ -21,27 +21,33 @@
         required
         class="form-control"
       />
-      <div class="invalid-feedback ">please enter a title</div>
+      <div class="invalid-feedback">please enter a title</div>
 
       <label>Description</label>
       <textarea
         name="listing[description]"
         placeholder="Enter description"
         required
-         class="form-control"
+        class="form-control"
       >
 <%= listing.description %></textarea
       >
       <div class="invalid-feedback">please enter a short description</div>
+
+      <div class="mb-3">
+        <p class="form-label">Original Listing Image</p>
+        <div class="original-img-preview">
+          <img src="<%= originalImageUrl %>" class="img-thumbnail" />
+        </div>
+      </div>
 
       <label>Upload New image</label>
       <input
         name="listing[image]"
         type="file"
         placeholder="Enter image URL"
-         class="form-control"
+        class="form-control"
       />
-
 
       <label>Price (₹)</label>
       <input
@@ -50,7 +56,7 @@
         type="number"
         placeholder="Enter price"
         required
-         class="form-control"
+        class="form-control"
       />
       <div class="invalid-feedback">please enter a correct price</div>
 
@@ -61,7 +67,7 @@
         type="text"
         placeholder="Enter country"
         required
-         class="form-control"
+        class="form-control"
       />
       <div class="invalid-feedback">please enter a country name</div>
 
@@ -72,7 +78,7 @@
         type="text"
         placeholder="Enter location"
         required
-         class="form-control"
+        class="form-control"
       />
       <div class="invalid-feedback">please enter location</div>
       <button type="submit">Update Listing</button>

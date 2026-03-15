@@ -669,3 +669,19 @@ button:active {
   box-shadow: none;
 }
 
+.original-img-preview {
+  width: 100%;
+  display: flex;
+  justify-content: left;
+  margin-bottom: 1.5rem;
+}
+
+.original-img-preview img {
+  height: 200px; /* Standardized height */
+  width: auto;   /* Maintains aspect ratio */
+  max-width: 100%;
+  border-radius: 0.8rem;
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  filter: brightness(0.9); /* Subtle 'original' look */
+}
