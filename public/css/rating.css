@@ -197,3 +197,10 @@
 }
 
 .starability-result { margin: 10px auto !important; display: block; }
+
+.review-card .btn-dark {
+  width: auto;           /* not full width */
+  padding: 0.3rem 1rem;
+  background: #222;
+  font-size: 0.8rem;
+}
