@@ -22,11 +22,27 @@ const listingSchema = new Schema({
       ref: "Review",
     },
   ],
+  
   owner: {
     type: Schema.Types.ObjectId,
     ref: "User",
+  }, 
+  // ==================== GeoJSON for Location (Recommended) ====================
+  geometry: {
+    type: {
+      type: String,
+      enum: ["Point"],        // Only "Point" is allowed
+      required: true,
+    },
+    coordinates: {
+      type: [Number],         // [longitude, latitude]  ← Important order!
+      required: true,
+    },
   },
+  // =========================================================================
+
 });
+
 
 listingSchema.post("findOneAndDelete", async (listing) => {
   if (listing) {
