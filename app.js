@@ -167,11 +167,9 @@ app.get("/admin/seed-demo-data", async (req, res) => {
       host = await User.register(newUser, "password123");
     }
 
-    const mode = req.query.mode || "replace";
-    if (mode === "replace") {
-      await Listing.deleteMany({});
-      await Review.deleteMany({});
-    }
+    // Clear old test listings & reviews to ensure a clean demo
+    await Listing.deleteMany({});
+    await Review.deleteMany({});
 
     const sampleReviewComments = [
       { comment: "Absolutely breathtaking place! Clean, beautiful, and the host was super communicative.", rating: 5 },

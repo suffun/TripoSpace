@@ -6,7 +6,6 @@ const User = require("../models/user.js");
 const Review = require("../models/review.js");
 
 const target = (process.argv[2] || "").toLowerCase();
-const mode = (process.argv[3] || "replace").toLowerCase();
 const isAtlas = target === "atlas" || target === "--atlas";
 
 const MONGO_URL = isAtlas 
@@ -42,12 +41,10 @@ const initDB = async () => {
     host = await User.register(newUser, "password123");
   }
 
-  // Clear existing data only in replace mode
-  if (mode === "replace") {
-    console.log("Cleaning up old test listings & reviews...");
-    await Listing.deleteMany({});
-    await Review.deleteMany({});
-  }
+  // Clear existing data to ensure a clean demo
+  console.log("Cleaning up old test listings & reviews...");
+  await Listing.deleteMany({});
+  await Review.deleteMany({});
 
   // Create some sample reviews
   const createdReviews = [];
