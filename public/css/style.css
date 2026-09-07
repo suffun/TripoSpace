@@ -281,7 +281,8 @@ img {
   background-color: var(--bg-surface);
 }
 
-.theme-toggle-btn {
+.theme-toggle-btn,
+.nav-circle-btn {
   background: var(--bg-surface);
   border: 1px solid var(--border-light);
   color: var(--text-main);
@@ -293,6 +294,7 @@ img {
   justify-content: center;
   cursor: pointer;
   transition: all var(--transition-fast);
+  text-decoration: none;
 }
 
 @media (min-width: 768px) {
@@ -377,7 +379,8 @@ img {
   }
 }
 
-.theme-toggle-btn:hover {
+.theme-toggle-btn:hover,
+.nav-circle-btn:hover {
   border-color: var(--primary);
   color: var(--primary);
   transform: rotate(15deg);
