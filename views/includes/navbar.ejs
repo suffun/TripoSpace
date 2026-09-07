@@ -1,61 +1,169 @@
-<style>
-  .btn-search{
-    background-color:  #ff385c;
-    color : white;
-    border-radius : 25px;
+<nav class="navbar navbar-expand-md navbar-custom sticky-top">
+  <div class="container-fluid px-lg-4 px-2 position-relative">
+    <!-- Brand Logo -->
+    <a class="brand-logo" href="/listings">
+      <i class="fa-solid fa-compass"></i>
+      <span>TripoSpace</span>
+    </a>
 
-  }
-  .btn-search:hover{
-    background-color:  #ff385c;
-    color : white;
-  }
-  .navbar form.d-flex {
-  width: 400px; /* total width */
-}
+    <!-- Center Search Bar (Dead Center on Desktop) -->
+    <div class="nav-search-center-container d-none d-md-block">
+      <form class="nav-search-bar" action="/listings" method="GET" role="search">
+        <input
+          class="nav-search-input"
+          type="text"
+          name="search"
+          placeholder="Search destinations, stays..."
+          value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
+          aria-label="Search"
+        />
+        <button class="nav-search-btn" type="submit" aria-label="Search button">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </form>
+    </div>
 
-.navbar form.d-flex input {
-  flex: 3;      /* 👈 bigger space */
-}
+    <!-- Mobile Quick Right Controls: Fast Theme Toggle + Hamburger Toggler -->
+    <div class="d-flex align-items-center gap-2 d-md-none">
+      <button class="theme-toggle-btn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+      <button
+        class="navbar-toggler border-0 shadow-none p-1"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarContent"
+        aria-controls="navbarContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <i class="fa-solid fa-bars fs-3"></i>
+      </button>
+    </div>
 
-.navbar form.d-flex button {
-  flex: 1;      /* 👈 smaller space */
-}
-.navbar .search-btn {
-  flex-shrink: 0;      /* prevents shrinking */
-}
-  
-</style>
+    <!-- Collapsible Menu Container -->
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <!-- 1. Desktop Nav Layout (hidden on mobile) -->
+      <div class="navbar-nav ms-auto align-items-center gap-2 d-none d-md-flex">
+        <!-- Explore Link -->
+        <a class="nav-action-btn" href="/listings">Explore</a>
 
-<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/listings"><i class="fa-regular fa-compass"></i></a>
+        <!-- Become a Host Link -->
+        <a class="nav-action-btn" href="/listings/new">Become a host</a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+        <!-- Wishlist Icon Link -->
+        <a class="theme-toggle-btn" href="/wishlist" title="Wishlist" aria-label="Wishlist">
+          <i class="fa-regular fa-heart"></i>
+        </a>
 
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
+        <!-- Dark Mode Toggle Button (Desktop) -->
+        <button id="themeToggleBtn" class="theme-toggle-btn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+          <i class="fa-solid fa-moon"></i>
+        </button>
 
-        <a class="nav-link" href="/listings">Explore</a>
+        <!-- User Menu Dropdown -->
+        <div class="dropdown ms-1">
+          <button
+            class="user-menu-pill dropdown-toggle text-decoration-none"
+            type="button"
+            id="userDropdownMenu"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i class="fa-solid fa-bars text-muted" style="font-size: 0.9rem;"></i>
+            <% if (currUser) { %>
+              <div class="user-avatar-circle">
+                <%= currUser.username ? currUser.username[0].toUpperCase() : 'U' %>
+              </div>
+            <% } else { %>
+              <i class="fa-solid fa-circle-user fs-4 text-muted"></i>
+            <% } %>
+          </button>
 
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4 mt-2 p-2" aria-labelledby="userDropdownMenu" style="min-width: 220px;">
+            <% if (!currUser) { %>
+              <li><a class="dropdown-item py-2 fw-semibold rounded-3" href="/signup"><i class="fa-solid fa-user-plus me-2 text-primary"></i> Sign up</a></li>
+              <li><a class="dropdown-item py-2 rounded-3" href="/login"><i class="fa-solid fa-right-to-bracket me-2 text-muted"></i> Log in</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item py-2 rounded-3 text-muted" href="/listings/new">Host your home</a></li>
+            <% } else { %>
+              <li class="px-3 py-2 text-muted small">Logged in as <b class="text-dark"><%= currUser.username %></b></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item py-2 rounded-3" href="/wishlist"><i class="fa-regular fa-heart me-2 text-danger"></i> My Wishlist</a></li>
+              <li><a class="dropdown-item py-2 rounded-3" href="/listings/new"><i class="fa-solid fa-plus me-2 text-muted"></i> Add New Stay</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item py-2 rounded-3 text-danger fw-semibold" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Log out</a></li>
+            <% } %>
+          </ul>
+        </div>
       </div>
-      <div class = "navbar-nav ms-auto">
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search destination"  aria-label="Search" />
-          <button class="btn btn-search" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
-        </form>
-      </div>
 
-      <div class="navbar-nav ms-auto">
-        <a class="nav-link" href="/listings/new">Become a host</a>
-        <% if(!currUser) { %>
-          <a class="nav-link" href="/signup"><b>Sign up</b></a>
-          <a class="nav-link" href="/login"><b>Log in</b></a>
+      <!-- 2. Mobile Nav Drawer Layout (hidden on desktop) -->
+      <div class="mobile-nav-drawer d-md-none pt-2 pb-1">
+        <!-- Mobile Search Form -->
+        <div class="mb-3 px-1">
+          <form class="nav-search-bar w-100" action="/listings" method="GET" role="search">
+            <input
+              class="nav-search-input"
+              type="text"
+              name="search"
+              placeholder="Search destinations, stays..."
+              value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
+              aria-label="Search destinations"
+            />
+            <button class="nav-search-btn" type="submit" aria-label="Search button">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- Mobile Navigation Links -->
+        <div class="mobile-nav-links d-flex flex-column gap-1">
+          <a class="mobile-nav-item" href="/listings">
+            <i class="fa-solid fa-compass text-primary me-3"></i>
+            <span>Explore Stays</span>
+          </a>
+
+          <a class="mobile-nav-item" href="/listings/new">
+            <i class="fa-solid fa-house-chimney-user text-primary me-3"></i>
+            <span>Become a Host</span>
+          </a>
+
+          <a class="mobile-nav-item" href="/wishlist">
+            <i class="fa-solid fa-heart text-danger me-3"></i>
+            <span>My Wishlist</span>
+          </a>
+
+          <hr class="mobile-nav-divider my-2">
+
+          <!-- User Account Info on Mobile -->
+          <% if (!currUser) { %>
+            <div class="d-flex gap-2 pt-2 px-1">
+              <a href="/login" class="btn btn-outline-dark rounded-pill flex-fill py-2 fw-semibold">Log in</a>
+              <a href="/signup" class="btn btn-primary rounded-pill flex-fill py-2 fw-semibold">Sign up</a>
+            </div>
+          <% } else { %>
+            <div class="mobile-user-card p-3 rounded-4 mb-1">
+              <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="user-avatar-circle">
+                  <%= currUser.username ? currUser.username[0].toUpperCase() : 'U' %>
+                </div>
+                <div>
+                  <div class="fw-bold"><%= currUser.username %></div>
+                  <small class="text-muted"><%= currUser.email || 'TripoSpace Traveler' %></small>
+                </div>
+              </div>
+              <div class="d-flex flex-column gap-1 mt-2 pt-2 border-top">
+                <a class="mobile-nav-subitem" href="/listings/new">
+                  <i class="fa-solid fa-plus me-2 text-muted"></i> Add New Stay
+                </a>
+                <a class="mobile-nav-subitem text-danger fw-semibold" href="/logout">
+                  <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Log out
+                </a>
+              </div>
+            </div>
           <% } %>
-            <% if(currUser) { %>
-              <a class="nav-link" href="/logout">Log Out</a>
-              <% } %>
+        </div>
       </div>
     </div>
   </div>

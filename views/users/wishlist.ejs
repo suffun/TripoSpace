@@ -1,0 +1,92 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container py-4">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h2 class="fw-bold mb-1"><i class="fa-solid fa-heart text-danger me-2"></i>My Wishlist</h2>
+      <p class="text-muted mb-0">Your saved dream destinations and favorite stays</p>
+    </div>
+    <a href="/listings" class="btn btn-outline-dark rounded-pill px-3">
+      <i class="fa-solid fa-arrow-left me-1"></i> Explore More
+    </a>
+  </div>
+
+  <% if (!wishlist || wishlist.length === 0) { %>
+    <div class="empty-state-card">
+      <div class="empty-state-icon">
+        <i class="fa-regular fa-heart"></i>
+      </div>
+      <h3>Your wishlist is empty</h3>
+      <p>As you search, tap the heart icon on any listing to save your favorite stays here.</p>
+      <a href="/listings" class="btn btn-danger rounded-pill px-4 py-2 fw-semibold">
+        Start Exploring Stays
+      </a>
+    </div>
+  <% } else { %>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+      <% for (let listing of wishlist) { %>
+        <% if (listing) { %>
+          <div class="col">
+            <div
+              class="listing-card-modern"
+              data-id="<%= listing._id %>"
+              data-price="<%= listing.price %>"
+            >
+              <!-- Image & Wishlist Toggle -->
+              <div class="card-media-wrapper">
+                <a href="/listings/<%= listing._id %>">
+                  <img
+                    src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80' %>"
+                    alt="<%= listing.title %>"
+                    loading="lazy"
+                    onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'"
+                  />
+                </a>
+                <button
+                  class="wishlist-btn saved"
+                  type="button"
+                  data-id="<%= listing._id %>"
+                  aria-label="Remove from wishlist"
+                  title="Remove from wishlist"
+                >
+                  <i class="fa-solid fa-heart text-danger"></i>
+                </button>
+                <a href="/listings/<%= listing._id %>" class="card-quick-overlay">
+                  View details <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+              </div>
+
+              <!-- Card Details -->
+              <div class="card-details-box">
+                <div class="card-title-row">
+                  <h6 class="card-location"><%= listing.location %>, <%= listing.country %></h6>
+                  <div class="card-rating-badge">
+                    <i class="fa-solid fa-star"></i>
+                    <span>
+                      <% if (listing.reviews && listing.reviews.length > 0) { %>
+                        <% let totalScore = listing.reviews.reduce((acc, r) => acc + (r.rating || 5), 0); %>
+                        <%= (totalScore / listing.reviews.length).toFixed(1) %>
+                      <% } else { %>
+                        New
+                      <% } %>
+                    </span>
+                  </div>
+                </div>
+
+                <p class="card-title-sub"><%= listing.title %></p>
+                <p class="card-meta-capacity">
+                  <i class="fa-solid fa-user-group me-1"></i> Up to <%= listing.guests || 2 %> guests
+                </p>
+
+                <div class="card-price-row">
+                  <span class="price-val">₹<%= listing.price ? listing.price.toLocaleString("en-IN") : "0" %></span>
+                  <span class="price-unit"> / night</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% } %>
+      <% } %>
+    </div>
+  <% } %>
+</div>
