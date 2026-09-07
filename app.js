@@ -28,20 +28,27 @@ const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js")
 
-// const MONGO_URL = "mongodb://127.0.0.1:27017/TripoSpace";
-const dbUrl = process.env.ATLASDB_URL;
+const LOCAL_MONGO_URL = process.env.LOCAL_MONGO_URL || "mongodb://127.0.0.1:27017/TripoSpace";
+const dbUrl = (process.env.NODE_ENV === "production" && process.env.ATLASDB_URL)
+  ? process.env.ATLASDB_URL
+  : (process.env.USE_ATLAS === "true" && process.env.ATLASDB_URL ? process.env.ATLASDB_URL : LOCAL_MONGO_URL);
 
 async function main() {
-  await mongoose.connect(dbUrl);
+  try {
+    await mongoose.connect(dbUrl, { serverSelectionTimeoutMS: 5000 });
+    console.log(`Connected to MongoDB (${dbUrl.includes("127.0.0.1") ? "Local" : "Cloud Atlas"}) successfully!`);
+  } catch (err) {
+    if (dbUrl !== LOCAL_MONGO_URL) {
+      console.warn("MongoDB Atlas connection failed. Falling back to local MongoDB...", err.message);
+      await mongoose.connect(LOCAL_MONGO_URL);
+      console.log("Connected to local MongoDB successfully!");
+    } else {
+      console.error("Failed to connect to MongoDB:", err);
+    }
+  }
 }
 
-main()
-  .then(() => {
-    console.log("connected to DB"); 
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+main();
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -50,18 +57,17 @@ app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "public")));
 
-
 const store = MongoStore.create({
-  mongoUrl : dbUrl,
-  crypto :{
-    secret :process.env.SECRET,
+  mongoUrl: dbUrl,
+  crypto: {
+    secret: process.env.SECRET || "tripospacesecretcode",
   },
-  touchAfter : 24 * 3600,
+  touchAfter: 24 * 3600,
 });
 
-store.on("error",()=>{
-  console.log("error in mongo session store",err);
-})
+store.on("error", (err) => {
+  console.log("error in mongo session store", err);
+});
 
 const sessionOptions = {
   store,
@@ -92,6 +98,7 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
+  res.locals.warning = req.flash("warning");
   res.locals.currUser = req.user;
   next();
 });
@@ -110,14 +117,21 @@ app.use((req, res, next) => {
 //   next();
 // });
 
-// app.get("/", (req, res) => {
-//   res.send("HI I am root");
-// });
+app.get("/", (req, res) => {
+  res.redirect("/listings");
+});
 
+app.get("/privacy", (req, res) => {
+  res.render("info/privacy.ejs");
+});
 
-app.use("/listings",listingRouter);
-app.use("/listings/:id/reviews",reviewRouter);
-app.use("/",userRouter);
+app.get("/terms", (req, res) => {
+  res.render("info/terms.ejs");
+});
+
+app.use("/listings", listingRouter);
+app.use("/listings/:id/reviews", reviewRouter);
+app.use("/", userRouter);
 
 
 

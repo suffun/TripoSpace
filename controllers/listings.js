@@ -1,16 +1,71 @@
 const Listing = require("../models/listing.js");
+const User = require("../models/user.js");
 const NodeGeocoder = require("node-geocoder");
 
 // Setup free OpenStreetMap Nominatim geocoder
 const geocoder = NodeGeocoder({
   provider: "openstreetmap",
-  userAgent: "Airbnb-Clone-App", // Helps avoid rate limiting
+  userAgent: "TripoSpace-Travel-App",
   timeout: 5000,
 });
 
 module.exports.index = async (req, res) => {
-  const allListings = await Listing.find({});
-  res.render("listings/index", { allListings });
+  const { category, search, minPrice, maxPrice, guests, amenities } = req.query;
+
+  let filter = {};
+
+  if (category && category !== "All") {
+    filter.category = category;
+  }
+
+  if (search && search.trim() !== "") {
+    const regex = new RegExp(search.trim(), "i");
+    filter.$or = [
+      { title: regex },
+      { location: regex },
+      { country: regex },
+      { category: regex },
+    ];
+  }
+
+  if (minPrice || maxPrice) {
+    filter.price = {};
+    if (minPrice) filter.price.$gte = Number(minPrice);
+    if (maxPrice) filter.price.$lte = Number(maxPrice);
+  }
+
+  if (guests) {
+    filter.guests = { $gte: Number(guests) };
+  }
+
+  if (amenities) {
+    const amenitiesArr = Array.isArray(amenities) ? amenities : [amenities];
+    filter.amenities = { $all: amenitiesArr };
+  }
+
+  const allListings = await Listing.find(filter).populate("reviews");
+
+  // Fetch wishlist IDs for logged-in user
+  let userWishlistIds = [];
+  if (req.user && req.user._id) {
+    const user = await User.findById(req.user._id);
+    if (user && user.wishlist) {
+      userWishlistIds = user.wishlist.map((id) => id.toString());
+    }
+  }
+
+  res.render("listings/index", {
+    allListings,
+    activeCategory: category || "All",
+    searchQuery: search || "",
+    filters: {
+      minPrice: minPrice || "",
+      maxPrice: maxPrice || "",
+      guests: guests || "",
+      amenities: Array.isArray(amenities) ? amenities : amenities ? [amenities] : [],
+    },
+    userWishlistIds,
+  });
 };
 
 module.exports.renderNewForm = (req, res) => {
@@ -27,52 +82,86 @@ module.exports.showListing = async (req, res) => {
       },
     })
     .populate("owner");
+
   if (!listing) {
-    req.flash("error", "Listing  you requested for does not exist!");
+    req.flash("error", "Listing you requested for does not exist!");
     return res.redirect("/listings");
   }
 
-  res.render("listings/show", { listing });
+  // Calculate review score statistics
+  let totalScore = 0;
+  let avgRating = 0;
+  if (listing.reviews && listing.reviews.length > 0) {
+    totalScore = listing.reviews.reduce((acc, r) => acc + (r.rating || 5), 0);
+    avgRating = (totalScore / listing.reviews.length).toFixed(2);
+  }
+
+  // Find similar listings in same category or country
+  const similarListings = await Listing.find({
+    _id: { $ne: listing._id },
+    $or: [{ category: listing.category }, { country: listing.country }],
+  })
+    .limit(3)
+    .populate("reviews");
+
+  let isSavedInWishlist = false;
+  if (req.user && req.user._id) {
+    const user = await User.findById(req.user._id);
+    if (user && user.wishlist) {
+      isSavedInWishlist = user.wishlist.some(
+        (wId) => wId.toString() === listing._id.toString()
+      );
+    }
+  }
+
+  res.render("listings/show", {
+    listing,
+    similarListings,
+    avgRating,
+    reviewCount: listing.reviews ? listing.reviews.length : 0,
+    isSavedInWishlist,
+  });
 };
 
 module.exports.createListing = async (req, res, next) => {
-  // if(!req.body.listing){
-  //   throw new ExpressError(400,"send valid data for listing")
-  // }
-
-  // let {title,description,image,price,country,location} = req.body;
-
-  // let listing = req.body.listing;
-  let url = req.file.path;
-  let filename = req.file.filename;
-
   const newListing = new Listing(req.body.listing);
   newListing.owner = req.user._id;
-  newListing.image = { url, filename };
+
+  if (req.file) {
+    newListing.image = { url: req.file.path, filename: req.file.filename };
+  } else if (!newListing.image || !newListing.image.url) {
+    newListing.image = {
+      url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+      filename: "defaultlisting",
+    };
+  }
+
+  // Parse amenities
+  if (req.body.listing.amenities && typeof req.body.listing.amenities === "string") {
+    newListing.amenities = req.body.listing.amenities
+      .split(",")
+      .map((a) => a.trim())
+      .filter(Boolean);
+  }
 
   // Convert address → GeoJSON coordinates
-  const address = `${req.body.listing.location}, ${req.body.listing.country}`;
-  const geoData = await geocoder.geocode(address);
-
-  if (geoData && geoData.length > 0) {
-    newListing.geometry = {
-      type: "Point",
-      coordinates: [geoData[0].longitude, geoData[0].latitude], // longitude first!
-    };
-  } else {
-    // Fallback to Delhi, India
-    newListing.geometry = {
-      type: "Point",
-      coordinates: [77.209, 28.6139],
-    };
-    req.flash(
-      "warning",
-      "Could not find exact location. Using default coordinates.",
-    );
+  try {
+    const address = `${req.body.listing.location}, ${req.body.listing.country}`;
+    const geoData = await geocoder.geocode(address);
+    if (geoData && geoData.length > 0) {
+      newListing.geometry = {
+        type: "Point",
+        coordinates: [geoData[0].longitude, geoData[0].latitude],
+      };
+    } else {
+      newListing.geometry = { type: "Point", coordinates: [77.209, 28.6139] };
+    }
+  } catch (err) {
+    newListing.geometry = { type: "Point", coordinates: [77.209, 28.6139] };
   }
 
   await newListing.save();
-  req.flash("success", "new listing created!");
+  req.flash("success", "New listing created successfully!");
   res.redirect("/listings");
 };
 
@@ -80,29 +169,48 @@ module.exports.renderEditForm = async (req, res) => {
   let { id } = req.params;
   const listing = await Listing.findById(id);
   if (!listing) {
-    req.flash("error", "Listing  you requested for does not exist!");
+    req.flash("error", "Listing you requested for does not exist!");
     return res.redirect("/listings");
   }
-  // to decrease the quality of edit image
-  let originalImageUrl = listing.image.url;
-  originalImageUrl = originalImageUrl.replace("/upload", "/upload/h_300,w_250");
+
+  let originalImageUrl = (listing.image && listing.image.url) || "";
+  if (originalImageUrl.includes("/upload")) {
+    originalImageUrl = originalImageUrl.replace("/upload", "/upload/h_300,w_250");
+  }
   res.render("listings/edit", { listing, originalImageUrl });
 };
 
 module.exports.updateListing = async (req, res) => {
-  // if (!req.body.listing) {
-  //   throw new ExpressError(400, "send valid data for lisying");
-  // }
   let { id } = req.params;
-  // console.log(req.body);
-  let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing });
-  if (typeof req.file !== "undefined") {
-    let url = req.file.path;
-    let filename = req.file.filename;
-    listing.image = { url, filename };
-    await listing.save();
+  let updateData = { ...req.body.listing };
+
+  if (typeof updateData.amenities === "string") {
+    updateData.amenities = updateData.amenities
+      .split(",")
+      .map((a) => a.trim())
+      .filter(Boolean);
   }
 
+  if (updateData.location || updateData.country) {
+    try {
+      const address = `${updateData.location || ""}, ${updateData.country || ""}`;
+      const geoData = await geocoder.geocode(address);
+      if (geoData && geoData.length > 0) {
+        updateData.geometry = {
+          type: "Point",
+          coordinates: [geoData[0].longitude, geoData[0].latitude],
+        };
+      }
+    } catch (e) {
+      // Keep existing geometry on error
+    }
+  }
+
+  if (req.file) {
+    updateData.image = { url: req.file.path, filename: req.file.filename };
+  }
+
+  await Listing.findByIdAndUpdate(id, updateData, { runValidators: true });
   req.flash("success", "Listing Updated!");
   res.redirect(`/listings/${id}`);
 };
@@ -113,3 +221,4 @@ module.exports.destroyListing = async (req, res) => {
   req.flash("success", "Listing Deleted!");
   res.redirect("/listings");
 };
+

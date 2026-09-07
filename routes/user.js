@@ -23,27 +23,9 @@ router
     userController.login,
   );
 
-// router.get("/signup", userController.renderSignupForm );
-
-// router.post(
-//   "/signup",
-//   wrapAsync(userController.signup),
-// );
-
-// routes/users.js or wherever
-
-// router.get("/login", userController.renderloginForm);
-
-// router.post(
-//   "/login",
-//   saveRedirectUrl,
-//   passport.authenticate("local", {
-//     failureRedirect: "/login",
-//     failureFlash: true,
-//   }),
-//   userController.login,
-// );
-
 router.get("/logout", userController.logout);
+
+router.post("/wishlist/toggle/:id", wrapAsync(userController.toggleWishlist));
+router.get("/wishlist", wrapAsync(userController.renderWishlist));
 
 module.exports = router;
