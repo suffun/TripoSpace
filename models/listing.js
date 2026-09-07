@@ -26,20 +26,59 @@ const listingSchema = new Schema({
   owner: {
     type: Schema.Types.ObjectId,
     ref: "User",
-  }, 
-  // ==================== GeoJSON for Location (Recommended) ====================
+  },
+  category: {
+    type: String,
+    enum: [
+      "Trending",
+      "Rooms",
+      "Iconic Cities",
+      "Mountains",
+      "Amazing Pools",
+      "Camping",
+      "Farms",
+      "Castles",
+      "Arctic",
+      "Beachfront",
+      "Luxury",
+    ],
+    default: "Trending",
+  },
+  guests: {
+    type: Number,
+    default: 2,
+    min: 1,
+  },
+  bedrooms: {
+    type: Number,
+    default: 1,
+    min: 1,
+  },
+  beds: {
+    type: Number,
+    default: 1,
+    min: 1,
+  },
+  baths: {
+    type: Number,
+    default: 1,
+    min: 1,
+  },
+  amenities: {
+    type: [String],
+    default: ["Wifi", "Air conditioning", "Kitchen", "Free parking"],
+  },
   geometry: {
     type: {
       type: String,
-      enum: ["Point"],        // Only "Point" is allowed
-      required: true,
+      enum: ["Point"],
+      default: "Point",
     },
     coordinates: {
-      type: [Number],         // [longitude, latitude]  ← Important order!
-      required: true,
+      type: [Number],
+      default: [77.209, 28.6139],
     },
   },
-  // =========================================================================
 
 });
 
