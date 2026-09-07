@@ -1,87 +1,169 @@
 <% layout("/layouts/boilerplate") %>
-<link rel="stylesheet" href="/css/style.css" />
 
-<div class="edit-wrapper">
-  <div class="edit-container">
-    <h3>Edit Listing</h3>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10 col-12">
+      <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5">
+        <h2 class="fw-bold mb-2">Edit Listing</h2>
+        <p class="text-muted mb-4">Update your property details, pricing, or photos.</p>
 
-    <form
-      method="POST"
-      action="/listings/<%= listing._id %>?_method=PUT"
-      novalidate
-      class="needs-validation"
-      enctype="multipart/form-data"
-    >
-      <label>Title</label>
-      <input
-        name="listing[title]"
-        value="<%= listing.title %>"
-        type="text"
-        placeholder="Enter title"
-        required
-        class="form-control"
-      />
-      <div class="invalid-feedback">please enter a title</div>
+        <form
+          method="POST"
+          action="/listings/<%= listing._id %>?_method=PUT"
+          novalidate
+          class="needs-validation"
+          enctype="multipart/form-data"
+        >
+          <!-- Title -->
+          <div class="mb-3">
+            <label for="title" class="form-label fw-semibold">Title</label>
+            <input
+              id="title"
+              name="listing[title]"
+              value="<%= listing.title %>"
+              type="text"
+              class="form-control rounded-3 p-2"
+              required
+            />
+            <div class="invalid-feedback">Please enter a title.</div>
+          </div>
 
-      <label>Description</label>
-      <textarea
-        name="listing[description]"
-        placeholder="Enter description"
-        required
-        class="form-control"
-      >
-<%= listing.description %></textarea
-      >
-      <div class="invalid-feedback">please enter a short description</div>
+          <!-- Description -->
+          <div class="mb-3">
+            <label for="desc" class="form-label fw-semibold">Description</label>
+            <textarea
+              id="desc"
+              name="listing[description]"
+              rows="4"
+              class="form-control rounded-3 p-2"
+              required
+            ><%= listing.description %></textarea>
+            <div class="invalid-feedback">Please enter a description.</div>
+          </div>
 
-      <div class="mb-3">
-        <p class="form-label">Original Listing Image</p>
-        <div class="original-img-preview">
-          <img src="<%= originalImageUrl %>" class="img-thumbnail" />
-        </div>
+          <!-- Category & Guests -->
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label for="category" class="form-label fw-semibold">Category</label>
+              <select id="category" name="listing[category]" class="form-select rounded-3 p-2">
+                <% 
+                  const cats = [
+                    "Trending", "Rooms", "Iconic Cities", "Mountains",
+                    "Amazing Pools", "Camping", "Farms", "Castles",
+                    "Arctic", "Beachfront", "Luxury"
+                  ];
+                %>
+                <% for (let c of cats) { %>
+                  <option value="<%= c %>" <%= listing.category === c ? 'selected' : '' %>><%= c %></option>
+                <% } %>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label for="guests" class="form-label fw-semibold">Guest Capacity</label>
+              <input
+                id="guests"
+                name="listing[guests]"
+                type="number"
+                min="1"
+                max="30"
+                value="<%= listing.guests || 2 %>"
+                class="form-control rounded-3 p-2"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Original Image Preview -->
+          <% if (originalImageUrl) { %>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Current Image</label>
+              <div>
+                <img
+                  src="<%= originalImageUrl %>"
+                  class="rounded-3 shadow-sm"
+                  style="max-height: 180px; width: auto; object-fit: cover;"
+                  alt="Original image preview"
+                />
+              </div>
+            </div>
+          <% } %>
+
+          <!-- Upload New Image -->
+          <div class="mb-3">
+            <label for="image" class="form-label fw-semibold">Upload New Photo (optional)</label>
+            <input
+              id="image"
+              name="listing[image]"
+              type="file"
+              class="form-control rounded-3 p-2"
+              accept="image/*"
+            />
+          </div>
+
+          <!-- Price, Location, Country -->
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label for="price" class="form-label fw-semibold">Price (₹ / night)</label>
+              <input
+                id="price"
+                name="listing[price]"
+                value="<%= listing.price %>"
+                type="number"
+                min="0"
+                class="form-control rounded-3 p-2"
+                required
+              />
+              <div class="invalid-feedback">Please enter a valid price.</div>
+            </div>
+
+            <div class="col-md-4">
+              <label for="location" class="form-label fw-semibold">City / Location</label>
+              <input
+                id="location"
+                name="listing[location]"
+                value="<%= listing.location %>"
+                type="text"
+                class="form-control rounded-3 p-2"
+                required
+              />
+              <div class="invalid-feedback">Please enter location.</div>
+            </div>
+
+            <div class="col-md-4">
+              <label for="country" class="form-label fw-semibold">Country</label>
+              <input
+                id="country"
+                name="listing[country]"
+                value="<%= listing.country %>"
+                type="text"
+                class="form-control rounded-3 p-2"
+                required
+              />
+              <div class="invalid-feedback">Please enter country.</div>
+            </div>
+          </div>
+
+          <!-- Amenities -->
+          <div class="mb-4">
+            <label for="amenities" class="form-label fw-semibold">Amenities (comma-separated)</label>
+            <input
+              id="amenities"
+              name="listing[amenities]"
+              type="text"
+              class="form-control rounded-3 p-2"
+              value="<%= (listing.amenities && listing.amenities.length) ? listing.amenities.join(', ') : 'Wifi, Air conditioning, Kitchen, Free parking' %>"
+            />
+          </div>
+
+          <!-- Submit Button -->
+          <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-danger btn-lg rounded-pill fw-semibold py-2">
+              <i class="fa-solid fa-check me-2"></i>Update Listing
+            </button>
+          </div>
+        </form>
       </div>
-
-      <label>Upload New image</label>
-      <input
-        name="listing[image]"
-        type="file"
-        placeholder="Enter image URL"
-        class="form-control"
-      />
-
-      <label>Price (₹)</label>
-      <input
-        name="listing[price]"
-        value="<%= listing.price %>"
-        type="number"
-        placeholder="Enter price"
-        required
-        class="form-control"
-      />
-      <div class="invalid-feedback">please enter a correct price</div>
-
-      <label>Country</label>
-      <input
-        name="listing[country]"
-        value="<%= listing.country %>"
-        type="text"
-        placeholder="Enter country"
-        required
-        class="form-control"
-      />
-      <div class="invalid-feedback">please enter a country name</div>
-
-      <label>Location</label>
-      <input
-        name="listing[location]"
-        value="<%= listing.location %>"
-        type="text"
-        placeholder="Enter location"
-        required
-        class="form-control"
-      />
-      <div class="invalid-feedback">please enter location</div>
-      <button type="submit">Update Listing</button>
-    </form>
+    </div>
   </div>
 </div>
