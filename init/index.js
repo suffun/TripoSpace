@@ -1,14 +1,27 @@
+require("dotenv").config({ path: require("path").resolve(__dirname, "../.env") });
 const mongoose = require("mongoose");
 const initData = require("./data.js");
 const Listing = require("../models/listing.js");
 const User = require("../models/user.js");
 const Review = require("../models/review.js");
 
-const MONGO_URL = "mongodb://127.0.0.1:27017/TripoSpace";
+const target = (process.argv[2] || "").toLowerCase();
+const mode = (process.argv[3] || "replace").toLowerCase();
+const isAtlas = target === "atlas" || target === "--atlas";
+
+const MONGO_URL = isAtlas 
+  ? (process.env.ATLASDB_URL ? process.env.ATLASDB_URL.trim() : null)
+  : (process.env.LOCAL_MONGO_URL || "mongodb://127.0.0.1:27017/TripoSpace");
+
+if (isAtlas && !MONGO_URL) {
+  console.error("Error: ATLASDB_URL is not defined in your .env file!");
+  process.exit(1);
+}
 
 async function main() {
-  await mongoose.connect(MONGO_URL);
-  console.log("Connected to MongoDB for initialization");
+  console.log(`Connecting to ${isAtlas ? "MongoDB Atlas (Cloud)" : "Local MongoDB"}...`);
+  await mongoose.connect(MONGO_URL, { serverSelectionTimeoutMS: 8000 });
+  console.log(`Connected successfully to ${isAtlas ? "MongoDB Atlas" : "Local MongoDB"}!`);
 }
 
 const sampleReviewComments = [
@@ -29,9 +42,12 @@ const initDB = async () => {
     host = await User.register(newUser, "password123");
   }
 
-  // Clear existing data
-  await Listing.deleteMany({});
-  await Review.deleteMany({});
+  // Clear existing data only in replace mode
+  if (mode === "replace") {
+    console.log("Cleaning up old test listings & reviews...");
+    await Listing.deleteMany({});
+    await Review.deleteMany({});
+  }
 
   // Create some sample reviews
   const createdReviews = [];

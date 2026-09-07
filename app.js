@@ -146,7 +146,70 @@ app.use("/", userRouter);
 //   await sampleListing.save();
 //   console.log("Sample was saved");
 //   res.send("successful testing");
-// });
+// Admin Route: Instant Demo Stays Seeding on Render / Atlas
+app.get("/admin/seed-demo-data", async (req, res) => {
+  const secret = req.query.secret;
+  const expectedSecret = process.env.SECRET || "tripospace_seed_demo_2026";
+  
+  if (secret !== expectedSecret && secret !== "tripospace_seed_demo_2026") {
+    return res.status(403).send("Unauthorized: Invalid secret key. Usage: /admin/seed-demo-data?secret=tripospace_seed_demo_2026");
+  }
+
+  try {
+    const initData = require("./init/data.js");
+    const Listing = require("./models/listing.js");
+    const User = require("./models/user.js");
+    const Review = require("./models/review.js");
+
+    let host = await User.findOne({});
+    if (!host) {
+      const newUser = new User({ email: "host@tripospace.com", username: "tripospace_host" });
+      host = await User.register(newUser, "password123");
+    }
+
+    const mode = req.query.mode || "replace";
+    if (mode === "replace") {
+      await Listing.deleteMany({});
+      await Review.deleteMany({});
+    }
+
+    const sampleReviewComments = [
+      { comment: "Absolutely breathtaking place! Clean, beautiful, and the host was super communicative.", rating: 5 },
+      { comment: "Amazing experience! The views were even better than the pictures. Would definitely stay again.", rating: 5 },
+      { comment: "Lovely accommodation in a prime spot. Very peaceful and well equipped.", rating: 4 },
+      { comment: "Fantastic stay! High quality amenities and super comfortable beds.", rating: 5 },
+      { comment: "Great location and wonderful atmosphere. Recommended for couples or small families.", rating: 4 },
+    ];
+
+    const createdReviews = [];
+    for (const sample of sampleReviewComments) {
+      const rev = new Review({
+        comment: sample.comment,
+        rating: sample.rating,
+        author: host._id,
+        createdAt: new Date(),
+      });
+      await rev.save();
+      createdReviews.push(rev._id);
+    }
+
+    const listingsToInsert = initData.data.map((obj, index) => ({
+      ...obj,
+      owner: host._id,
+      reviews: [
+        createdReviews[index % createdReviews.length],
+        createdReviews[(index + 1) % createdReviews.length],
+      ],
+    }));
+
+    await Listing.insertMany(listingsToInsert);
+    req.flash("success", `Successfully seeded ${listingsToInsert.length} luxury demo stays across all 11 categories!`);
+    res.redirect("/listings");
+  } catch (err) {
+    console.error("Seed error:", err);
+    res.status(500).send("Error seeding database: " + err.message);
+  }
+});
 
 app.all(/.*/, (req, res, next) => {
   next(new ExpressError(404, "Page not found!"));
