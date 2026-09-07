@@ -1,136 +1,371 @@
 <% layout("/layouts/boilerplate") %>
 
-<style>
-  #filters {
-   display : flex;
-   flex-wrap : wrap;
-   margin-left: 0.5rem;
-   align-items: center;;
-  }
-  .filter {
-    text-align : center;
-    margin-right: 2rem;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-    opacity: 0.7;
-  }
-  .filter:hover {
-    opacity : 1;
-    cursor : pointer;
-  }
-  .tax-info{
-    display : none;
-  }
-  .tax-toggle {
-    border : 1px solid black;
-    border-radius : 1rem;
-    height : 3.5rem;
-    padding : 1rem;
-    margin-bottom : 1rem;
-  }
+<!-- Category Filter Section (Section 1) -->
+<div class="category-filter-wrapper">
+  <div class="container-fluid px-lg-5 px-3">
+    <div class="d-flex align-items-center justify-content-between gap-3">
+      <!-- Scrollable Categories Container with Zero-Shift Fade Buttons -->
+      <div class="category-nav-container flex-grow-1 position-relative overflow-hidden">
+        <!-- Left Fade & Arrow -->
+        <div class="category-fade-left" id="categoryFadeLeft">
+          <button id="scrollLeftBtn" class="category-scroll-btn" type="button" aria-label="Scroll categories left">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+        </div>
 
-</style>
-<div id="filters">
-  <div class="filter">
-    <div>
-      <i class="fa-solid fa-fire"> </i>
-    </div>
-    <p>Trending</p>
-  </div>
-  <div class="filter">
-    <div>
-      <i class="fa-solid fa-bed"></i>
-    </div>
-    <p>Rooms</p>
-  </div>
-  <div class="filter">
-    <div>
-      <i class="fa-solid fa-city"></i>
-    </div>
-    <p>Iconic Cities</p>
-  </div><div class="filter">
-    <div>
-      <i class="fa-solid fa-mountain"></i>
-    </div>
-    <p>Mountains</p>
-  </div><div class="filter">
-    <div>
-      <i class="fa-solid fa-person-swimming"></i>
-    </div>
-    <p>Amazing Pools</p>
-  </div><div class="filter">
-    <div>
-      <i class="fa-solid fa-fire-burner"></i>
-    </div>
-    <p>Camping</p>
-  </div><div class="filter">
-    <div>
-      <i class="fa-solid fa-cow"></i>
-    </div>
-    <p>Farms</p>
-  </div><div class="filter">
-    <div>
-      <i class="fa-brands fa-fort-awesome"></i>
-    </div>
-    <p>Castles</p>
-  </div>
-   <div class="filter">
-    <div>
-      <i class="fa-solid fa-snowflake"></i>
-    </div>
-    <p>Arctic</p>
-    </div>
-    <div class="tax-toggle"> 
-      <div class="form-check-reverse form-switch">
-        <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
-        <label class="form-check-label" for="switchCheckDefault">Display total after taxes</label>
+        <div id="categoryTrack" class="category-track">
+          <% 
+            const categories = [
+              { name: "All", icon: "fa-solid fa-border-all" },
+              { name: "Trending", icon: "fa-solid fa-fire" },
+              { name: "Rooms", icon: "fa-solid fa-bed" },
+              { name: "Iconic Cities", icon: "fa-solid fa-city" },
+              { name: "Mountains", icon: "fa-solid fa-mountain" },
+              { name: "Amazing Pools", icon: "fa-solid fa-person-swimming" },
+              { name: "Camping", icon: "fa-solid fa-campground" },
+              { name: "Farms", icon: "fa-solid fa-cow" },
+              { name: "Castles", icon: "fa-brands fa-fort-awesome" },
+              { name: "Arctic", icon: "fa-regular fa-snowflake" },
+              { name: "Beachfront", icon: "fa-solid fa-umbrella-beach" },
+              { name: "Luxury", icon: "fa-solid fa-gem" }
+            ];
+          %>
+
+          <% for (let cat of categories) { %>
+            <% 
+              // Preserve other query parameters when selecting category
+              let queryParams = [];
+              if (searchQuery) queryParams.push("search=" + encodeURIComponent(searchQuery));
+              if (filters.minPrice) queryParams.push("minPrice=" + encodeURIComponent(filters.minPrice));
+              if (filters.maxPrice) queryParams.push("maxPrice=" + encodeURIComponent(filters.maxPrice));
+              if (filters.guests) queryParams.push("guests=" + encodeURIComponent(filters.guests));
+              if (filters.amenities && filters.amenities.length) {
+                filters.amenities.forEach(a => queryParams.push("amenities=" + encodeURIComponent(a)));
+              }
+              if (cat.name !== "All") {
+                queryParams.push("category=" + encodeURIComponent(cat.name));
+              }
+              let targetUrl = "/listings" + (queryParams.length ? "?" + queryParams.join("&") : "");
+              let isCurrent = (activeCategory === cat.name) || (!activeCategory && cat.name === "All");
+            %>
+            <a href="<%= targetUrl %>" class="category-pill <%= isCurrent ? 'active' : '' %>">
+              <i class="<%= cat.icon %>"></i>
+              <span><%= cat.name %></span>
+            </a>
+          <% } %>
+        </div>
+
+        <!-- Right Fade & Arrow -->
+        <div class="category-fade-right" id="categoryFadeRight">
+          <button id="scrollRightBtn" class="category-scroll-btn" type="button" aria-label="Scroll categories right">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Controls: Filters Modal Button & Taxes Toggle -->
+      <div class="filter-action-controls d-none d-md-flex">
+        <!-- Filter Modal Trigger -->
+        <button class="filter-modal-btn" type="button" data-bs-toggle="modal" data-bs-target="#filtersModal">
+          <i class="fa-solid fa-sliders"></i>
+          <span>Filters</span>
+          <% 
+            let activeFilterCount = 0;
+            if (filters.minPrice || filters.maxPrice) activeFilterCount++;
+            if (filters.guests) activeFilterCount++;
+            if (filters.amenities && filters.amenities.length) activeFilterCount += filters.amenities.length;
+          %>
+          <% if (activeFilterCount > 0) { %>
+            <span class="badge bg-danger rounded-pill"><%= activeFilterCount %></span>
+          <% } %>
+        </button>
+
+        <!-- Taxes Toggle -->
+        <div class="tax-toggle-box">
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" role="switch" id="taxToggleSwitch">
+            <label class="form-check-label user-select-none" for="taxToggleSwitch">Display total after taxes</label>
+          </div>
+        </div>
       </div>
     </div>
 
+    <!-- Mobile Filter & Taxes Row -->
+    <div class="d-flex d-md-none align-items-center justify-content-between pt-2 pb-1 border-top">
+      <button class="filter-modal-btn py-1 px-3" type="button" data-bs-toggle="modal" data-bs-target="#filtersModal">
+        <i class="fa-solid fa-sliders"></i>
+        <span>Filters</span>
+      </button>
+
+      <div class="form-check form-switch mb-0">
+        <input class="form-check-input" type="checkbox" role="switch" id="taxToggleSwitchMobile" onchange="document.getElementById('taxToggleSwitch').checked = this.checked; document.getElementById('taxToggleSwitch').dispatchEvent(new Event('change'));">
+        <label class="form-check-label small user-select-none" for="taxToggleSwitchMobile">Include taxes</label>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- <h3 class="text-center mb-4">All Listings</h3> -->
+<!-- Active Filter Pills Summary (if filters or search are active) -->
+<% if (searchQuery || activeCategory !== "All" || filters.minPrice || filters.maxPrice || filters.guests || (filters.amenities && filters.amenities.length)) { %>
+  <div class="d-flex align-items-center flex-wrap gap-2 pt-3 pb-1">
+    <span class="text-muted small fw-semibold">Active filters:</span>
+    
+    <% if (activeCategory !== "All") { %>
+      <span class="badge bg-light text-dark border p-2 rounded-pill fw-medium">
+        Category: <%= activeCategory %>
+        <a href="/listings<%= searchQuery ? '?search=' + encodeURIComponent(searchQuery) : '' %>" class="text-muted ms-1 text-decoration-none">&times;</a>
+      </span>
+    <% } %>
 
-<div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-4 justify-content-center">
-  <% for (let listing of allListings) { %>
-    <div class="col d-flex justify-content-center">
-      <a href="/listings/<%= listing._id %>" class="text-decoration-none text-dark">
-        <div class="card shadow-sm border-0" style="width: 25.5rem;">
-          <img
-            src="<%= listing.image.url %>"
-            class="card-img-top"
-            alt="listing_image"
-            style="height: 20rem; object-fit: cover;"
-          />
-          <div class="card-body text-center">
-            <p class="card-text mb-1">
-              <strong><%= listing.title %></strong><br />
-              &#8377;<%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %>/night
-              <i class="tax-info">&nbsp; &nbsp; +18% GST</i>
+    <% if (searchQuery) { %>
+      <span class="badge bg-light text-dark border p-2 rounded-pill fw-medium">
+        Search: "<%= searchQuery %>"
+        <a href="/listings<%= activeCategory !== 'All' ? '?category=' + encodeURIComponent(activeCategory) : '' %>" class="text-muted ms-1 text-decoration-none">&times;</a>
+      </span>
+    <% } %>
 
-            </p>
+    <% if (filters.minPrice || filters.maxPrice) { %>
+      <span class="badge bg-light text-dark border p-2 rounded-pill fw-medium">
+        Price: ₹<%= filters.minPrice || 0 %> - ₹<%= filters.maxPrice || 'Any' %>
+      </span>
+    <% } %>
+
+    <% if (filters.guests) { %>
+      <span class="badge bg-light text-dark border p-2 rounded-pill fw-medium">
+        Guests: <%= filters.guests %>+
+      </span>
+    <% } %>
+
+    <a href="/listings" class="btn btn-sm btn-link text-danger text-decoration-none fw-semibold">Clear all</a>
+  </div>
+<% } %>
+
+<!-- Main Listings Section (Section 2) -->
+<div class="listings-grid-section position-relative">
+  <!-- Grid Container -->
+  <div id="listingsGridContainer" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    <% if (!allListings || allListings.length === 0) { %>
+      <div class="col-12">
+        <div class="empty-state-card">
+          <div class="empty-state-icon">
+            <i class="fa-solid fa-magnifying-glass-location"></i>
+          </div>
+          <h3>No stays found</h3>
+          <p>We couldn't find any listings matching your current category or search filters. Try selecting another category or resetting your filters.</p>
+          <a href="/listings" class="btn btn-danger rounded-pill px-4 py-2 fw-semibold">
+            Clear All Filters
+          </a>
+        </div>
+      </div>
+    <% } else { %>
+      <% for (let listing of allListings) { %>
+        <% 
+          let isSaved = userWishlistIds && userWishlistIds.includes(listing._id.toString());
+          let lat = (listing.geometry && listing.geometry.coordinates && listing.geometry.coordinates[1]) || 28.6139;
+          let lng = (listing.geometry && listing.geometry.coordinates && listing.geometry.coordinates[0]) || 77.209;
+          let imgUrl = listing.image && listing.image.url ? listing.image.url : "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80";
+        %>
+        <div class="col">
+          <div
+            class="listing-card-modern"
+            data-id="<%= listing._id %>"
+            data-price="<%= listing.price %>"
+            data-title="<%= listing.title %>"
+            data-lat="<%= lat %>"
+            data-lng="<%= lng %>"
+            data-img="<%= imgUrl %>"
+          >
+            <!-- Media Aspect Ratio Container -->
+            <div class="card-media-wrapper">
+              <a href="/listings/<%= listing._id %>" aria-label="View <%= listing.title %>">
+                <img
+                  src="<%= imgUrl %>"
+                  alt="<%= listing.title %>"
+                  loading="lazy"
+                  onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'"
+                />
+              </a>
+
+              <!-- Wishlist Heart Button -->
+              <button
+                class="wishlist-btn <%= isSaved ? 'saved' : '' %>"
+                type="button"
+                data-id="<%= listing._id %>"
+                aria-label="Save to wishlist"
+                title="Save to wishlist"
+              >
+                <i class="<%= isSaved ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart' %>"></i>
+              </button>
+
+              <!-- Hover View Details Overlay -->
+              <a href="/listings/<%= listing._id %>" class="card-quick-overlay">
+                View details <i class="fa-solid fa-arrow-right ms-1"></i>
+              </a>
+            </div>
+
+            <!-- Card Details -->
+            <div class="card-details-box">
+              <div class="card-title-row">
+                <h6 class="card-location"><%= listing.location %>, <%= listing.country %></h6>
+                <div class="card-rating-badge">
+                  <i class="fa-solid fa-star"></i>
+                  <span>
+                    <% if (listing.reviews && listing.reviews.length > 0) { %>
+                      <% let totalScore = listing.reviews.reduce((acc, r) => acc + (r.rating || 5), 0); %>
+                      <%= (totalScore / listing.reviews.length).toFixed(1) %> (<%= listing.reviews.length %>)
+                    <% } else { %>
+                      New
+                    <% } %>
+                  </span>
+                </div>
+              </div>
+
+              <p class="card-title-sub"><%= listing.title %></p>
+              <p class="card-meta-capacity">
+                <i class="fa-solid fa-user-group me-1"></i> Up to <%= listing.guests || 2 %> guests &middot; <%= listing.bedrooms || 1 %> <%= listing.bedrooms === 1 ? 'bed' : 'beds' %>
+              </p>
+
+              <div class="card-price-row">
+                <span class="price-val">₹<%= listing.price ? listing.price.toLocaleString("en-IN") : "0" %></span>
+                <span class="price-unit"> / night</span>
+                <span class="card-tax-calc ms-1"></span>
+              </div>
+            </div>
           </div>
         </div>
-      </a>
-    </div>
-  <% } %>
+      <% } %>
+    <% } %>
+  </div>
+
+  <!-- Interactive Explore Map Container (swapped on button toggle) -->
+  <div id="exploreMapContainer" style="display: none; height: 75vh; width: 100%; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-md); margin-top: 1rem;">
+    <div id="exploreLeafletMap" style="height: 100%; width: 100%;"></div>
+  </div>
 </div>
 
-<script>
-  let taxSwitch = document.getElementById("switchCheckDefault");
-  taxSwitch.addEventListener("click",() => {
+<!-- Floating Map / Grid View Switcher Button -->
+<button id="mapViewToggleBtn" class="floating-map-toggle-btn" type="button">
+  <i class="fa-solid fa-map"></i>
+  <span>Show Map</span>
+</button>
 
-    let taxInfo = document.getElementsByClassName("tax-info");
-    for(info of taxInfo){
-      if(info.style.display != "inline"){
-        info.style.display = "inline";
+<!-- Filter Modal (Section 2) -->
+<div class="modal fade" id="filtersModal" tabindex="-1" aria-labelledby="filtersModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 rounded-4 shadow-lg">
+      <div class="modal-header border-bottom py-3">
+        <h5 class="modal-title fw-bold" id="filtersModalLabel">Filters</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
 
-      }else{
-        info.style.display = "none";
-      }
-    }
-    
-  })
-</script>
+      <div class="modal-body p-4">
+        <form id="exploreFiltersForm" action="/listings" method="GET">
+          <!-- Preserve current search and category -->
+          <% if (activeCategory && activeCategory !== "All") { %>
+            <input type="hidden" name="category" value="<%= activeCategory %>">
+          <% } %>
+          <% if (searchQuery) { %>
+            <input type="hidden" name="search" value="<%= searchQuery %>">
+          <% } %>
 
+          <!-- Price Range Section -->
+          <div class="mb-4">
+            <h6 class="fw-bold mb-1">Price range</h6>
+            <p class="text-muted small mb-3">Nightly prices before taxes and fees</p>
 
+            <div class="row g-3">
+              <div class="col-6">
+                <label class="form-label small text-muted">Minimum (₹)</label>
+                <input
+                  type="number"
+                  class="form-control rounded-3"
+                  id="filterPriceMinInput"
+                  name="minPrice"
+                  placeholder="0"
+                  value="<%= filters.minPrice || '' %>"
+                  min="0"
+                />
+              </div>
+              <div class="col-6">
+                <label class="form-label small text-muted">Maximum (₹)</label>
+                <input
+                  type="number"
+                  class="form-control rounded-3"
+                  id="filterPriceMaxInput"
+                  name="maxPrice"
+                  placeholder="20000"
+                  value="<%= filters.maxPrice || '' %>"
+                  min="0"
+                />
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <input type="range" class="form-range" id="filterPriceMinSlider" min="0" max="20000" step="500" value="<%= filters.minPrice || 0 %>">
+              <input type="range" class="form-range" id="filterPriceMaxSlider" min="0" max="20000" step="500" value="<%= filters.maxPrice || 20000 %>">
+            </div>
+          </div>
+
+          <hr class="text-muted opacity-25">
+
+          <!-- Guests Count -->
+          <div class="mb-4">
+            <h6 class="fw-bold mb-1">Guests</h6>
+            <p class="text-muted small mb-3">Minimum guest capacity</p>
+            <div class="d-flex gap-2 flex-wrap">
+              <% [1, 2, 4, 6, 8].forEach(g => { %>
+                <label class="btn btn-outline-dark rounded-pill px-3 py-2 <%= Number(filters.guests) === g ? 'active' : '' %>">
+                  <input type="radio" name="guests" value="<%= g %>" class="d-none" <%= Number(filters.guests) === g ? 'checked' : '' %>>
+                  <%= g %>+ guests
+                </label>
+              <% }); %>
+            </div>
+          </div>
+
+          <hr class="text-muted opacity-25">
+
+          <!-- Amenities -->
+          <div class="mb-3">
+            <h6 class="fw-bold mb-2">Popular Amenities</h6>
+            <div class="row row-cols-2 g-2">
+              <% 
+                const amenityOptions = [
+                  { name: "Wifi", icon: "fa-solid fa-wifi" },
+                  { name: "Pool", icon: "fa-solid fa-person-swimming" },
+                  { name: "Kitchen", icon: "fa-solid fa-kitchen-set" },
+                  { name: "Air conditioning", icon: "fa-solid fa-snowflake" },
+                  { name: "Free parking", icon: "fa-solid fa-square-parking" },
+                  { name: "Indoor fireplace", icon: "fa-solid fa-fire" }
+                ];
+              %>
+              <% for (let am of amenityOptions) { %>
+                <div class="col">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      name="amenities"
+                      value="<%= am.name %>"
+                      id="amenity_<%= am.name.replace(/\s+/g, '_') %>"
+                      <%= (filters.amenities && filters.amenities.includes(am.name)) ? 'checked' : '' %>
+                    >
+                    <label class="form-check-label user-select-none" for="amenity_<%= am.name.replace(/\s+/g, '_') %>">
+                      <i class="<%= am.icon %> text-muted me-1"></i> <%= am.name %>
+                    </label>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer border-top d-flex justify-content-between py-3">
+        <a href="/listings" class="btn btn-link text-dark text-decoration-none fw-semibold">Clear all</a>
+        <button type="submit" form="exploreFiltersForm" class="btn btn-danger rounded-pill px-4 fw-semibold">
+          Show stays
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
